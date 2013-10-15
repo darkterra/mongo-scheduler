@@ -1,0 +1,26 @@
+{
+    "name": "mongo-scheduler"
+  , "description": "persistent event scheduler using mongo as storage"
+  , "version": "0.0.1"
+  , "keywords": ["scheduler", "event", "mongo"]
+  , "repository": {
+      "type": "git"
+    , "url": "git://github.com/jamplify/mongo-scheduler"
+    }
+  , "dependencies": {
+  }
+  , "devDependencies": {
+    }
+  , "scripts": {
+      "test": "mocha -u bdd -R spec -c ./test/*test.js"
+    }
+  , "license": "MIT"
+  , "engine": {
+      "node": ">= 0.6"
+    }
+    , "author": {"name": "JP Erkelens", "email": "jp@jamplify.com"}
+    , "contributors": [
+        {"name": "Matt Roman", "email": "matt@jamplify.com"}
+    ]
+
+}
