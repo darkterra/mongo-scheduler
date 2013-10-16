@@ -25,32 +25,6 @@ describe('schedule builder', function() {
   })
 })
 
-describe('should exit', function() {
-  it('returns true if eventDoc is null', function() {
-    helper.shouldExit().should.equal(true)
-  })
-
-  it('returns true if conditions.after exists and is in the future', function() {
-    var now = new Date()
-    var past = new Date(now).setMinutes(now.getMinutes() - 5)
-    var shouldExit = helper.shouldExit({conditions: { after: now }}, past)
-    shouldExit.should.equal(true)
-  })
-
-  it('returns false otherwise if conditions.after is in the past', function() {
-    var now = new Date()
-    var past = new Date(now).setMinutes(now.getMinutes() - 5)
-    var shouldExit = helper.shouldExit({conditions: { after: past }}, now)
-    shouldExit.should.equal(false)
-  })
-
-  it('returns false if conditions.after does not exist', function() {
-    var now = new Date()
-    var shouldExit = helper.shouldExit({conditions: {before: now}})
-    shouldExit.should.equal(false)
-  })
-})
-
 describe('event builder', function() {
   beforeEach(function() {
     this.doc = { conditions: {}, storage: {} }
@@ -66,5 +40,35 @@ describe('event builder', function() {
     this.doc.storage.id = "HI!!!"
     var event = helper.buildEvent(this.doc)
     event.conditions.query._id.should.eql("HI!!!")
+  })
+})
+
+describe('should exit', function() {
+  it('should return true if an error is passed', function() {
+    helper.shouldExit(new Error()).should.eql(true)
+  })
+
+  it('should return true if last error object has an err string', function() {
+    helper.shouldExit(null, {lastErrorObject: {err: 'hai'}}).should.eql(true)
+  })
+
+  it('should return false if last error object has no err string', function() {
+    helper.shouldExit(null, {lastErrorObject: {}}).should.eql(false)
+  })
+
+  it('should return false if there is no lastErrorObject', function() {
+    helper.shouldExit(null, {}).should.eql(false)
+  })
+})
+
+describe('error builder', function() {
+  it('should return error', function() {
+    var err = new Error()
+    helper.buildError(err).should.equal(err)
+  })
+
+  it('should wrap err string in error', function() {
+    var result = {lastErrorObject: { err: 'sad times' }}
+    helper.buildError(null, result).message.should.equal('sad times')
   })
 })
