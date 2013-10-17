@@ -1,4 +1,4 @@
-mongo-scheduler
+mongo-scheduler [![Build Status](https://travis-ci.org/jamplify/mongo-scheduler.png)](https://travis-ci.org/jamplify/mongo-scheduler)
 ==================
 
 Persistent event scheduler using mongodb as storage
