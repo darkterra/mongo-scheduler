@@ -42,10 +42,12 @@ describe('schedule', function() {
     var self = this
     var scheduler = new Scheduler(connection)
     scheduler.schedule('new-event', {collection: 'hi'}, null, function() {
-      self.collection.find().toArray(function(err, docs) {
-        docs.length.should.eql(1)
-        docs[0].event.should.eql('new-event')
-      })
+      setTimeout(function() {
+        self.collection.find().toArray(function(err, docs) {
+          docs.length.should.eql(1)
+          docs[0].event.should.eql('new-event')
+        })
+      }, 200)
     })
   })
 

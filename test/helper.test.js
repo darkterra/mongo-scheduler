@@ -11,14 +11,6 @@ describe('schedule builder', function() {
     query.should.eql({event: 'event', storage: 'storage'})
   })
 
-  it('should stringify the query condition', function() {
-    var doc = helper.buildSchedule(null,null, {
-      query: { I: { am: 'an' }, object: 'see' }
-    }).doc
-
-    doc.conditions.query.should.eql('{"I":{"am":"an"},"object":"see"}')
-  })
-
   it('should default to empty conditions', function() {
     var doc = helper.buildSchedule(null,null, null).doc
     doc.conditions.should.eql({})
@@ -28,12 +20,6 @@ describe('schedule builder', function() {
 describe('event builder', function() {
   beforeEach(function() {
     this.doc = { conditions: {}, storage: {} }
-  })
-
-  it('should convert conditions.query to an object', function() {
-    this.doc.conditions.query = '{"I":{"am":"an"},"object":"see"}'
-    var event = helper.buildEvent(this.doc)
-    event.conditions.query.should.eql({I: {am: "an"}, object: "see"})
   })
 
   it('extends query with id from storage', function() {
