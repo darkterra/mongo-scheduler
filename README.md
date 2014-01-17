@@ -17,11 +17,11 @@ Usage
 
 ```javascript
 var Scheduler = require('mongo-scheduer')
-var scheduler = new Scheduler(connectionString, options)
+var scheduler = new Scheduler(connection, options)
 ```
 
 __Arguments__
-* connectionString <String> - mongodb connections string (i.e.: "mongodb://localhost:27017/scheduler-db")
+* connectionString <String or Object> - mongodb connections string (i.e.: "mongodb://localhost:27017/scheduler-db") or a mongoose connection object
 * options <Object> - Options object
 
 __Valid Options__
