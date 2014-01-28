@@ -1,18 +1,32 @@
 var helper = require('../lib/helper')
 
 describe('schedule builder', function() {
+  var details = {
+    event: 'event',
+    collection: 'collection',
+    id: 'recordId',
+    after: 'date',
+    query: 'query',
+    data: { my: 'data' }
+  }
+
   it('should return doc to insert', function() {
-    var doc = helper.buildSchedule('event', 'storage', 'conditions', 'data').doc
-    doc.should.eql({event: 'event', conditions: 'conditions', storage: 'storage', data: 'data'})
+    var doc = helper.buildSchedule(details).doc
+    doc.should.eql({
+      event: 'event',
+      conditions: { query: 'query', after: 'date' },
+      storage: { collection: 'collection', id: 'recordId' },
+      data: { my: 'data' }
+    })
   })
 
   it('should return query for updates', function() {
-    var query = helper.buildSchedule('event', 'storage', 'conditions').query
-    query.should.eql({event: 'event', storage: 'storage'})
+    var query = helper.buildSchedule(details).query
+    query.should.eql({event: 'event', storage: {collection: 'collection', id: 'recordId'}})
   })
 
   it('should default to empty conditions', function() {
-    var doc = helper.buildSchedule(null,null, null).doc
+    var doc = helper.buildSchedule({}).doc
     doc.conditions.should.eql({})
   })
 })

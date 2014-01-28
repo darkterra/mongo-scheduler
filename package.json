@@ -20,7 +20,7 @@
     "should": "~2.0.1"
   },
   "scripts": {
-    "test": "mocha -u bdd -R spec -c ./test/*test.js"
+    "test": "mocha -u bdd -R spec --recursive -c ./test/"
   },
   "license": "MIT",
   "engine": {

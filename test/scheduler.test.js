@@ -39,35 +39,46 @@ after(function() {
 })
 
 describe('schedule', function() {
-  it('should create an event', function() {
+  it('should create an event', function(done) {
     var expectation = function() {
       this.events.find().toArray(function(err, docs) {
         docs.length.should.eql(1)
         docs[0].event.should.eql('new-event')
+        done()
       })
     }.bind(this)
 
-    this.scheduler.schedule('new-event', {collection: 'hi'}, null, function() {
-      setTimeout(expectation, 200)
-    })
+    this.scheduler.schedule('new-event', { collection: 'records' }, null,  expectation)
   })
 
-  it('should overwrite an event', function() {
+  it('should overwrite an event', function(done) {
     var expectation = function () {
       this.events.find({event: 'new-event'}).toArray(function(err, docs) {
         docs.length.should.eql(1)
         docs[0].event.should.eql('new-event')
         docs[0].conditions.should.eql({after: 100})
+        done()
       })
     }.bind(this)
 
-    this.scheduler.schedule('new-event', {collection: 'releases'}, null, function() {
-      this.scheduler.schedule('new-event', {collection: 'releases'}, {after: 100}, expectation)
+    var scheduleDetails = {
+      event: 'new-event',
+      collection: 'records'
+    }
+
+    this.scheduler.schedule(scheduleDetails, function() {
+      scheduleDetails.after = 100
+      this.scheduler.schedule(scheduleDetails, expectation)
     }.bind(this))
   })
 })
 
 describe('emitter', function() {
+  var details = {
+    event: 'awesome',
+    collection: 'records'
+  }
+
   it('should emit an event with matching records', function(done) {
     var running = true
     this.scheduler.on('awesome', function(doc) {
@@ -76,8 +87,9 @@ describe('emitter', function() {
       running = false
     })
 
+
     this.records.insert({message: 'This is a record'}, function() {
-      this.scheduler.schedule('awesome', {collection: 'records'})
+      this.scheduler.schedule(details)
     }.bind(this))
   })
 
@@ -94,7 +106,7 @@ describe('emitter', function() {
     }.bind(this))
 
     this.records.insert({message: 'This is a record'}, function() {
-      this.scheduler.schedule('awesome', {collection: 'records'})
+      this.scheduler.schedule(details)
     }.bind(this))
   })
 })
