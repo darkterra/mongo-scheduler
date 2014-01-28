@@ -41,6 +41,12 @@ describe('event builder', function() {
     var event = helper.buildEvent(this.doc)
     event.conditions.query._id.should.eql("HI!!!")
   })
+
+  it('returns additional data', function() {
+    this.doc.data = "OMG!"
+    var event = helper.buildEvent(this.doc)
+    event.data.should.eql("OMG!")
+  })
 })
 
 describe('should exit', function() {

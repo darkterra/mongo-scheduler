@@ -4,6 +4,7 @@ var mocha = require('mocha')
   , Scheduler = require('../index.js')
   , connection = "mongodb://localhost:27017/mongo-scheduler"
   , MongoClient = mongo.MongoClient
+  , _ = require('underscore')
 
 before(function(done) {
   this.scheduler = new Scheduler(connection, {pollInterval: 250})
@@ -20,6 +21,8 @@ before(function(done) {
 })
 
 afterEach(function(done) {
+  this.scheduler.removeAllListeners()
+
   var cleanRecords = function () {
     this.records.remove({}, done)
   }.bind(this)
@@ -87,10 +90,26 @@ describe('emitter', function() {
       running = false
     })
 
-
     this.records.insert({message: 'This is a record'}, function() {
       this.scheduler.schedule(details)
     }.bind(this))
+  })
+
+  it('emits additional data', function(done) {
+    var additionalDetails = _.extend({data: 'MyData'}, details)
+
+    var running = true
+    this.scheduler.on('awesome', function(doc, data) {
+      data.should.eql('MyData')
+      if(running) done()
+      running = false
+    })
+
+
+    this.records.insert({message: 'This is a record'}, function() {
+      this.scheduler.schedule(additionalDetails)
+    }.bind(this))
+
   })
 
   it('should delete executed events', function(done) {
