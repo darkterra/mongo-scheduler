@@ -2,8 +2,8 @@ var helper = require('../lib/helper')
 
 describe('schedule builder', function() {
   it('should return doc to insert', function() {
-    var doc = helper.buildSchedule('event', 'storage', 'conditions').doc
-    doc.should.eql({event: 'event', conditions: 'conditions', storage: 'storage'})
+    var doc = helper.buildSchedule('event', 'storage', 'conditions', 'data').doc
+    doc.should.eql({event: 'event', conditions: 'conditions', storage: 'storage', data: 'data'})
   })
 
   it('should return query for updates', function() {

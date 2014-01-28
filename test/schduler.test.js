@@ -3,100 +3,90 @@ var mocha = require('mocha')
   , mongo = require('mongodb')
   , Scheduler = require('../index.js')
   , connection = "mongodb://localhost:27017/mongo-scheduler"
+  , MongoClient = mongo.MongoClient
 
 before(function(done) {
-  var self = this
+  this.scheduler = new Scheduler(connection, {pollInterval: 250})
   mongo.MongoClient.connect(connection, function(err, db) {
-    self.db = db
+    this.db = db
     db.collection('scheduled_events', function(err, coll) {
-      self.collection = coll
+      this.events = coll
       db.createCollection('records', function(err, coll) {
-        self.recColl = coll
+        this.records = coll
         done()
-      })
-    })
-  })
+      }.bind(this))
+    }.bind(this))
+  }.bind(this))
 })
 
 afterEach(function(done) {
-  var self = this
-  this.collection.remove({}, function(err) {
+  this.events.remove({}, function(err) {
     setTimeout(function() {
-      self.recColl.remove({}, done)
-    }, 100)
-  })
+      this.records.remove({}, done)
+    }.bind(this), 100)
+  }.bind(this))
 })
 
 after(function() {
-  var self = this
-  this.collection.remove({}, function(err) {
-    self.recColl.remove({}, function(err) {
+  this.events.remove({}, function(err) {
+    this.records.remove({}, function(err) {
       db.close()
       done()
     })
-  })
+  }.bind(this))
 })
 
 describe('schedule', function() {
   it('should create an event', function() {
-    var self = this
-    var scheduler = new Scheduler(connection)
-    scheduler.schedule('new-event', {collection: 'hi'}, null, function() {
+    this.scheduler.schedule('new-event', {collection: 'hi'}, null, function() {
       setTimeout(function() {
-        self.collection.find().toArray(function(err, docs) {
+        this.events.find().toArray(function(err, docs) {
           docs.length.should.eql(1)
           docs[0].event.should.eql('new-event')
-        })
-      }, 200)
+        }.bind(this))
+      }.bind(this), 200)
     })
   })
 
   it('should overwrite an event', function() {
-    var self = this
-    var scheduler = new Scheduler(connection)
-    scheduler.schedule('new-event', {collection: 'releases'}, null, function() {
-      scheduler.schedule('new-event', {collection: 'releases'}, {after: 100}, function() {
-        self.collection.find({event: 'new-event'}).toArray(function(err, docs) {
+    this.scheduler.schedule('new-event', {collection: 'releases'}, null, function() {
+      this.scheduler.schedule('new-event', {collection: 'releases'}, {after: 100}, function() {
+        this.events.find({event: 'new-event'}).toArray(function(err, docs) {
           docs.length.should.eql(1)
           docs[0].event.should.eql('new-event')
           docs[0].conditions.should.eql({after: 100})
         })
-      })
-    })
+      }.bind(this))
+    }.bind(this))
   })
 })
 
 describe('emitter', function() {
   it('should emit an event with matching records', function(done) {
-    var scheduler = new Scheduler(connection, 250)
     var running = true
-
-    scheduler.on('awesome', function(doc) {
+    this.scheduler.on('awesome', function(doc) {
       doc.message.should.eql('This is a record')
       if(running) done()
       running = false
     })
 
-    this.recColl.insert({message: 'This is a record'}, function() {
-      scheduler.schedule('awesome', {collection: 'records'})
-    })
+    this.records.insert({message: 'This is a record'}, function() {
+      this.scheduler.schedule('awesome', {collection: 'records'})
+    }.bind(this))
   })
 
   it('should delete executed events', function(done) {
-    var self = this
-    var scheduler = new Scheduler(connection, 250)
-
-    scheduler.on('awesome', function(doc) {
+    this.scheduler.on('awesome', function(doc) {
       setTimeout(function() {
-        self.collection.find({event: 'awesome'}).toArray(function(err, docs) {
+        this.events.find({event: 'awesome'}).toArray(function(err, docs) {
           docs.length.should.eql(0)
           done()
         })
-      }, 50)
-    })
+      }.bind(this), 50)
+    }.bind(this))
 
-    this.recColl.insert({message: 'This is a record'}, function() {
-      scheduler.schedule('awesome', {collection: 'records'})
-    })
+    this.records.insert({message: 'This is a record'}, function() {
+      this.scheduler.schedule('awesome', {collection: 'records'})
+    }.bind(this))
   })
 })
