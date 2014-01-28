@@ -20,11 +20,13 @@ before(function(done) {
 })
 
 afterEach(function(done) {
+  var cleanRecords = function () {
+    this.records.remove({}, done)
+  }.bind(this)
+
   this.events.remove({}, function(err) {
-    setTimeout(function() {
-      this.records.remove({}, done)
-    }.bind(this), 100)
-  }.bind(this))
+    setTimeout(cleanRecords, 100)
+  })
 })
 
 after(function() {
@@ -38,25 +40,29 @@ after(function() {
 
 describe('schedule', function() {
   it('should create an event', function() {
+    var expectation = function() {
+      this.events.find().toArray(function(err, docs) {
+        docs.length.should.eql(1)
+        docs[0].event.should.eql('new-event')
+      })
+    }.bind(this)
+
     this.scheduler.schedule('new-event', {collection: 'hi'}, null, function() {
-      setTimeout(function() {
-        this.events.find().toArray(function(err, docs) {
-          docs.length.should.eql(1)
-          docs[0].event.should.eql('new-event')
-        }.bind(this))
-      }.bind(this), 200)
+      setTimeout(expectation, 200)
     })
   })
 
   it('should overwrite an event', function() {
+    var expectation = function () {
+      this.events.find({event: 'new-event'}).toArray(function(err, docs) {
+        docs.length.should.eql(1)
+        docs[0].event.should.eql('new-event')
+        docs[0].conditions.should.eql({after: 100})
+      })
+    }.bind(this)
+
     this.scheduler.schedule('new-event', {collection: 'releases'}, null, function() {
-      this.scheduler.schedule('new-event', {collection: 'releases'}, {after: 100}, function() {
-        this.events.find({event: 'new-event'}).toArray(function(err, docs) {
-          docs.length.should.eql(1)
-          docs[0].event.should.eql('new-event')
-          docs[0].conditions.should.eql({after: 100})
-        })
-      }.bind(this))
+      this.scheduler.schedule('new-event', {collection: 'releases'}, {after: 100}, expectation)
     }.bind(this))
   })
 })
@@ -76,13 +82,15 @@ describe('emitter', function() {
   })
 
   it('should delete executed events', function(done) {
+    var expectation = function() {
+      this.events.find({event: 'awesome'}).toArray(function(err, docs) {
+        docs.length.should.eql(0)
+        done()
+      })
+    }.bind(this)
+
     this.scheduler.on('awesome', function(doc) {
-      setTimeout(function() {
-        this.events.find({event: 'awesome'}).toArray(function(err, docs) {
-          docs.length.should.eql(0)
-          done()
-        })
-      }.bind(this), 50)
+      setTimeout(expectation, 50)
     }.bind(this))
 
     this.records.insert({message: 'This is a record'}, function() {
