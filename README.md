@@ -35,22 +35,23 @@ __Valid Options__
 Schedules an event.
 
 ```javascript
-scheduler.schedule('breakfast', {collection: 'meals'}, {after: new Date() })
+var event = {name: 'breakfast' collection: 'meals', after: new Date(), data: 'Fry'}
+scheduler.schedule(event)
 ```
 
 __Arguments__
-* event <String> - Name of event that should be fired
-* storage <Object> - Info about the documents this event corresponds to
-* [conditions] <Object> - Timing and filtering info
+* event <Object> - Event details
 * [callback] <Function>
 
-__Storage Fields__
-* collection <String> - Name of collection to query when event is triggered
+__Event Fields__
+* name <String> - Name of event that should be fired
+* collection <Object> - Info about the documents this event corresponds to
 * [id] <ObjectId> - Value of the _id field of the document this event corresponds to
-
-__Conditions Fields__
 * [after] <Date> - Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls
 * [query] <Object> - a MongoDB query expression to select records that this event should be triggered for
+* [data] <Object|Primitive> - Data that is passed in as the second argument to the event handler
+
+
 
 ---------------------------------------
 
@@ -59,8 +60,8 @@ __Conditions Fields__
 Event handler.
 
 ```javascript
-scheduler.on('breakfast', function(meal) {
-  console.log(meal.ingredients)
+scheduler.on('breakfast', function(meal, cookingMethods) {
+  console.log(cookingMethods + " the " + meal.ingredients)
 })
 ```
 __Arguments__

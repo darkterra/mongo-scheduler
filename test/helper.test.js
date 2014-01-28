@@ -2,7 +2,7 @@ var helper = require('../lib/helper')
 
 describe('schedule builder', function() {
   var details = {
-    event: 'event',
+    name: 'name',
     collection: 'collection',
     id: 'recordId',
     after: 'date',
@@ -13,7 +13,7 @@ describe('schedule builder', function() {
   it('should return doc to insert', function() {
     var doc = helper.buildSchedule(details).doc
     doc.should.eql({
-      event: 'event',
+      event: 'name',
       conditions: { query: 'query', after: 'date' },
       storage: { collection: 'collection', id: 'recordId' },
       data: { my: 'data' }
@@ -22,7 +22,7 @@ describe('schedule builder', function() {
 
   it('should return query for updates', function() {
     var query = helper.buildSchedule(details).query
-    query.should.eql({event: 'event', storage: {collection: 'collection', id: 'recordId'}})
+    query.should.eql({event: 'name', storage: {collection: 'collection', id: 'recordId'}})
   })
 
   it('should default to empty conditions', function() {

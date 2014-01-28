@@ -65,7 +65,7 @@ describe('schedule', function() {
     }.bind(this)
 
     var scheduleDetails = {
-      event: 'new-event',
+      name: 'new-event',
       collection: 'records'
     }
 
@@ -78,7 +78,7 @@ describe('schedule', function() {
 
 describe('emitter', function() {
   var details = {
-    event: 'awesome',
+    name: 'awesome',
     collection: 'records'
   }
 
