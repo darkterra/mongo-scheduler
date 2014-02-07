@@ -1,5 +1,6 @@
 var mocha = require('mocha')
   , should = require('should')
+  , sinon = require("sinon")
   , mongo = require('mongodb')
   , Scheduler = require('../index.js')
   , connection = "mongodb://localhost:27017/mongo-scheduler"
@@ -81,6 +82,24 @@ describe('emitter', function() {
     name: 'awesome',
     collection: 'records'
   }
+
+  it('should emit an error', function() {
+       var running = true
+
+    sinon.stub(this.records, 'find').yields(new Error("Cannot find"))
+
+    this.scheduler.on('error', function(err, event) {
+      err.message.should.eql('Cannot find')
+      event.should.eql({event: 'awesome', storage: {collection: 'records'}})
+
+      if(running) { this.records.find.restore(); done() }
+      running = false
+    }.bind(this))
+
+    this.records.insert({message: 'This is a record'}, function() {
+      this.scheduler.schedule(details)
+    }.bind(this))
+  })
 
   it('should emit an event with matching records', function(done) {
     var running = true
