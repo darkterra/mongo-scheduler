@@ -69,6 +69,9 @@ __Arguments__
 * handler <Function> - handler
 
 
+#### Error handling
+If the scheduler encounters an error it will emit an 'error' event. In this case the handler, will receive two arguments: the Error object, and the event doc (if applicable).
+
 License
 -------
 
