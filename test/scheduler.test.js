@@ -114,12 +114,15 @@ describe('emitter', function() {
     }.bind(this))
   })
 
-  it('emits additional data', function(done) {
+  it('emits the original event', function(done) {
     var additionalDetails = _.extend({data: 'MyData'}, details)
 
     var running = true
-    this.scheduler.on('awesome', function(doc, data) {
-      data.should.eql('MyData')
+    this.scheduler.on('awesome', function(doc, event) {
+      event.event.should.eql('awesome')
+      event.storage.should.eql({collection: 'records'})
+      event.data.should.eql('MyData')
+
       if(running) done()
       running = false
     })
