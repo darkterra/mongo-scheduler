@@ -1,11 +1,13 @@
-var mocha = require('mocha')
-  , should = require('should')
-  , sinon = require("sinon")
-  , mongo = require('mongodb')
-  , Scheduler = require('../index.js')
-  , connection = "mongodb://localhost:27017/mongo-scheduler"
-  , MongoClient = mongo.MongoClient
-  , _ = require('underscore')
+require('mocha')
+require('should')
+
+var sinon = require("sinon"),
+    assert = require('assert'),
+    mongo = require('mongodb'),
+    moment = require('moment'),
+    Scheduler = require('../index.js'),
+    connection = "mongodb://localhost:27017/mongo-scheduler",
+    _ = require('lodash')
 
 before(function(done) {
   this.scheduler = new Scheduler(connection, {pollInterval: 250})
@@ -28,14 +30,14 @@ afterEach(function(done) {
     this.records.remove({}, done)
   }.bind(this)
 
-  this.events.remove({}, function(err) {
+  this.events.remove({}, function() {
     setTimeout(cleanRecords, 100)
   })
 })
 
 after(function() {
-  this.events.remove({}, function(err) {
-    this.records.remove({}, function(err) {
+  this.events.remove({}, function() {
+    this.records.remove({}, function() {
       db.close()
       done()
     })
@@ -52,7 +54,10 @@ describe('schedule', function() {
       })
     }.bind(this)
 
-    this.scheduler.schedule('new-event', { collection: 'records' }, null,  expectation)
+    this.scheduler.schedule({
+      name: 'new-event',
+      collection: 'records',
+    }, expectation)
   })
 
   it('should overwrite an event', function(done) {
@@ -134,7 +139,7 @@ describe('emitter', function() {
 
   })
 
-  it('should delete executed events', function(done) {
+  it('deletes executed events', function(done) {
     var expectation = function() {
       this.events.find({event: 'awesome'}).toArray(function(err, docs) {
         docs.length.should.eql(0)
@@ -142,7 +147,7 @@ describe('emitter', function() {
       })
     }.bind(this)
 
-    this.scheduler.on('awesome', function(doc) {
+    this.scheduler.on('awesome', function() {
       setTimeout(expectation, 50)
     }.bind(this))
 
@@ -150,4 +155,42 @@ describe('emitter', function() {
       this.scheduler.schedule(details)
     }.bind(this))
   })
+
+  it('emits an empty event', function(done) {
+    this.scheduler.on('empty', function(doc, event) {
+      assert(!doc, "Doc should be null")
+      assert(!event.data, "data should be null")
+      event.event.should.eql('empty')
+      done()
+    })
+
+    this.scheduler.schedule({name: 'empty'})
+  })
+
+  describe('with cron string', function() {
+    it('updates the after condition', function() {
+      var expectedDate = moment().hours(23).startOf('hour').toDate()
+      var expectation = function() {
+        this.events.find({event: 'empty'}).toArray(function(err, docs) {
+          docs.length.should.eql(1)
+          var saniDate = moment(docs[0].conditions.after).startOf('second')
+
+          docs[0].status.should.eql('ready')
+          saniDate.toDate.should.eql(expectedDate)
+          done()
+        })
+      }.bind(this)
+
+      this.scheduler.on('empty', function() {
+        setTimeout(expectation, 50)
+      }.bind(this))
+
+      this.events.insert({
+        name: 'empty',
+        storage: {},
+        conditions: { after: new Date() },
+        cron: '0 23 * * *'
+      })
+    })
+  });
 })

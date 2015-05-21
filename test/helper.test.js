@@ -1,19 +1,24 @@
-var helper = require('../lib/helper')
+var _ = require('lodash'),
+    moment = require('moment'),
+    helper = require('../lib/helper')
 
 describe('schedule builder', function() {
-  var details = {
-    name: 'name',
-    collection: 'collection',
-    id: 'recordId',
-    after: 'date',
-    query: 'query',
-    data: { my: 'data' }
-  }
+  beforeEach(function() {
+    this.details = {
+      name: 'name',
+      collection: 'collection',
+      id: 'recordId',
+      after: 'date',
+      query: 'query',
+      data: { my: 'data' }
+    }
+  })
 
   it('should return doc to insert', function() {
-    var doc = helper.buildSchedule(details).doc
+    var doc = helper.buildSchedule(this.details).doc
     doc.should.eql({
       event: 'name',
+      status: 'ready',
       conditions: { query: 'query', after: 'date' },
       storage: { collection: 'collection', id: 'recordId' },
       data: { my: 'data' }
@@ -21,13 +26,35 @@ describe('schedule builder', function() {
   })
 
   it('should return query for updates', function() {
-    var query = helper.buildSchedule(details).query
-    query.should.eql({event: 'name', storage: {collection: 'collection', id: 'recordId'}})
+    var query = helper.buildSchedule(this.details).query
+    query.should.eql({
+      event: 'name',
+      storage: {collection: 'collection', id: 'recordId'}
+    })
   })
 
   it('should default to empty conditions', function() {
     var doc = helper.buildSchedule({}).doc
     doc.conditions.should.eql({})
+  })
+
+  describe('with cron property', function() {
+    beforeEach(function() {
+      this.cronDetails = _.extend({cron: '0 23 * * *'}, this.details)
+    });
+
+    it('should include cron string in doc', function() {
+      var doc = helper.buildSchedule(this.cronDetails).doc
+      doc.cron.should.eql('0 23 * * *')
+    })
+
+    it('should calculate next tick', function() {
+      var doc = helper.buildSchedule(this.cronDetails).doc,
+          nextTick = moment().hours(23).startOf('hour').toDate(),
+          sanitizedDate = moment(doc.conditions.after).startOf('second')
+
+      sanitizedDate.toDate().should.eql(nextTick)
+    })
   })
 })
 
