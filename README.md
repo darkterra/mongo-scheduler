@@ -25,7 +25,7 @@ __Arguments__
 * options <Object> - Options object
 
 __Valid Options__
-* pollInterval <Number> - Frequency in ms that the scheduler should poll the db. Default: 3600000 (1 hour)
+* pollInterval <Number> - Frequency in ms that the scheduler should poll the db. Default: 60000 (1 minute)
 * doNotFire <bool> - If set to true, this instance will only schedule events, not fire them. Default: false
 
 ---------------------------------------
@@ -45,11 +45,12 @@ __Arguments__
 
 __Event Fields__
 * name <String> - Name of event that should be fired
-* collection <Object> - Info about the documents this event corresponds to
+* [cron] <String> - A cron string representing a frequency this should fire on
+* [collection] <Object> - Info about the documents this event corresponds to
 * [id] <ObjectId> - Value of the _id field of the document this event corresponds to
 * [after] <Date> - Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls
 * [query] <Object> - a MongoDB query expression to select records that this event should be triggered for
-* [data] <Object|Primitive> - Data that is passed in as the second argument to the event handler
+* [data] <Object|Primitive> - Extra data to attach to the event
 
 
 
@@ -60,8 +61,10 @@ __Event Fields__
 Event handler.
 
 ```javascript
-scheduler.on('breakfast', function(meal, cookingMethods) {
-  console.log(cookingMethods + " the " + meal.ingredients)
+scheduler.on('breakfast', function(meal, event) {
+  console.log(event.data + " the " + meal.ingredients)
+  // Assuming the document {ingredients: "Bacon and Eggs"} is in the meals collection
+  // prints "Fry the Bacon and Eggs"
 })
 ```
 __Arguments__
