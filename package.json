@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "mocha": "~1.13.0",
-    "moment": "^2.10.3",
+    "moment": "2.10.3",
     "should": "~2.0.1",
     "sinon": "~1.8.1"
   },
