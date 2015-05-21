@@ -12,7 +12,7 @@
     "url": "git://github.com/jamplify/mongo-scheduler"
   },
   "dependencies": {
-    "cron-parser": "^0.6.2",
+    "cron-parser": "0.6.2",
     "lodash": "^3.9.1",
     "mongodb": "^2.0.33",
     "underscore": "~1.5.2"
