@@ -3,9 +3,13 @@
   "description": "persistent event scheduler using mongo as storage",
   "version": "0.3.0",
   "keywords": [
+    "job",
+    "jobs",
     "scheduler",
+    "schedule",
     "event",
-    "mongo"
+    "mongo",
+    "cron"
   ],
   "repository": {
     "type": "git",
