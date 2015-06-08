@@ -148,7 +148,7 @@ describe('emitter', function() {
     }.bind(this)
 
     this.scheduler.on('awesome', function() {
-      setTimeout(expectation, 50)
+      setTimeout(expectation, 1050)
     }.bind(this))
 
     this.records.insert({message: 'This is a record'}, function() {
