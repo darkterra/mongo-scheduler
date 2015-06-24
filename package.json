@@ -1,7 +1,7 @@
 {
   "name": "mongo-scheduler",
   "description": "persistent event scheduler using mongo as storage",
-  "version": "0.4.3",
+  "version": "1.0.0",
   "keywords": [
     "job",
     "jobs",
@@ -24,7 +24,7 @@
   "devDependencies": {
     "mocha": "~1.13.0",
     "moment": "2.10.3",
-    "should": "~2.0.1",
+    "should": "7.0.1",
     "sinon": "~1.8.1"
   },
   "scripts": {
