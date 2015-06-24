@@ -109,7 +109,7 @@ describe('emitter', function() {
   it('should emit an event with matching records', function(done) {
     var running = true
     this.scheduler.on('awesome', function(doc) {
-      doc.message.should.eql('This is a record')
+      doc[0].message.should.eql('This is a record')
       if(running) done()
       running = false
     })
@@ -117,6 +117,24 @@ describe('emitter', function() {
     this.records.insert({message: 'This is a record'}, function() {
       this.scheduler.schedule(details)
     }.bind(this))
+  })
+
+  it("emits an event with multiple records", function(done) {
+    var running = true
+    this.scheduler.on('awesome', function(docs) {
+      docs.length.should.eql(2)
+      if(running) done()
+      running = false
+    })
+
+    this.records.insert([
+      {message: 'This is a record'},
+      {message: 'Another Record'}
+    ], function() {
+      this.scheduler.schedule(details)
+    }.bind(this))
+
+    done()
   })
 
   it('emits the original event', function(done) {
@@ -165,6 +183,60 @@ describe('emitter', function() {
     })
 
     this.scheduler.schedule({name: 'empty'})
+  })
+
+  describe("with emitPerDoc", function() {
+    var additionalDetails = _.extend({
+      options: {emitPerDoc: true}
+    }, details)
+
+    it('should emit an event per doc', function(done) {
+      var running = true
+      this.scheduler.on('awesome', function(doc) {
+        doc.message.should.eql('This is a record')
+        if(running) done()
+        running = false
+      })
+      this.records.insert([
+        {message: 'This is a record'},
+        {message: 'This is a record'}
+      ], function() {
+        this.scheduler.schedule(additionalDetails)
+      }.bind(this))
+    })
+  })
+
+  describe("with a query", function() {
+    var additionalDetails = _.extend({query: {}}, details)
+
+    it('should emit an event with matching records', function(done) {
+      var running = true
+      this.scheduler.on('awesome', function(docs) {
+        docs[0].message.should.eql('This is a record')
+        if(running) done()
+        running = false
+      })
+
+      this.records.insert({message: 'This is a record'}, function() {
+        this.scheduler.schedule(additionalDetails)
+      }.bind(this))
+    })
+
+    it("emits an event with multiple records", function(done) {
+      var running = true
+      this.scheduler.on('awesome', function(docs) {
+        docs.length.should.eql(2)
+        if(running) done()
+        running = false
+      })
+
+      this.records.insert([
+        {message: 'This is a record'},
+        {message: 'Another Record'}
+      ], function() {
+        this.scheduler.schedule(additionalDetails)
+      }.bind(this))
+    })
   })
 
   describe('with cron string', function() {

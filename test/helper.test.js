@@ -16,12 +16,13 @@ describe('schedule builder', function() {
 
   it('should return doc to insert', function() {
     var doc = helper.buildSchedule(this.details).doc
-    doc.should.eql({
+    doc.should.have.properties({
       event: 'name',
       status: 'ready',
       conditions: { query: 'query', after: 'date' },
       storage: { collection: 'collection', id: 'recordId' },
-      data: { my: 'data' }
+      data: { my: 'data' },
+      options: {emitPerDoc: false}
     })
   })
 
