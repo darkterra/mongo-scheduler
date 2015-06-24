@@ -225,8 +225,6 @@ describe('emitter', function() {
     it("emits an event with multiple records", function(done) {
       var running = true
       this.scheduler.on('awesome', function(docs) {
-        console.log("hello")
-        console.dir(docs)
         docs.length.should.eql(2)
         if(running) done()
         running = false
