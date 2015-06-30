@@ -22,21 +22,47 @@ describe('schedule builder', function() {
       conditions: { query: 'query', after: 'date' },
       storage: { collection: 'collection', id: 'recordId' },
       data: { my: 'data' },
-      options: {emitPerDoc: false}
+      options: {emitPerDoc: false, queryFields: 'name collection id'}
     })
+
   })
 
   it('should return query for updates', function() {
     var query = helper.buildSchedule(this.details).query
-    query.should.eql({
+    query.should.have.properties({
       event: 'name',
-      storage: {collection: 'collection', id: 'recordId'}
+      'storage.collection' : 'collection',
+      'storage.id': 'recordId'
     })
   })
 
   it('should default to empty conditions', function() {
     var doc = helper.buildSchedule({}).doc
     doc.conditions.should.eql({})
+  })
+
+  describe("with queryfields", function() {
+    it('should translate the fields', function() {
+      this.details.options = {
+        queryFields: 'name collection id query after data'
+      }
+      var query = helper.buildSchedule(this.details).query
+      _.keys(query).should.eql(['event', 'storage.collection',
+        'storage.id', 'conditions.query', 'conditions.after', 'data'])
+    })
+
+    it('should pick the query fields from the doc', function() {
+      this.details.options = {
+        queryFields: 'name collection query data'
+      }
+      var query = helper.buildSchedule(this.details).query
+      query.should.eql({
+        event: 'name',
+        'storage.collection' : 'collection',
+        'conditions.query': 'query',
+        'data': {my: 'data'}
+      })
+    })
   })
 
   describe('with cron property', function() {
