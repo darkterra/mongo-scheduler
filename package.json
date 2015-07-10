@@ -1,7 +1,7 @@
 {
   "name": "mongo-scheduler",
   "description": "persistent event scheduler using mongo as storage",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "keywords": [
     "job",
     "jobs",
@@ -18,7 +18,7 @@
   "dependencies": {
     "cron-parser": "0.6.2",
     "lodash": "3.9.1",
-    "mongodb": "2.0.33",
+    "mongodb": "2.0.34",
     "underscore": "~1.5.2"
   },
   "devDependencies": {
