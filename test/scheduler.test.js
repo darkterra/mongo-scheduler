@@ -6,7 +6,7 @@ var sinon = require("sinon"),
     mongo = require('mongodb'),
     moment = require('moment'),
     Scheduler = require('../index.js'),
-    connection = "mongodb://33.33.33.100:27017/mongo-scheduler",
+    connection = "mongodb://localhost:27017/mongo-scheduler",
     _ = require('lodash')
 
 before(function(done) {
