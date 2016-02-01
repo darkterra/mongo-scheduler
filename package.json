@@ -1,7 +1,7 @@
 {
   "name": "mongo-scheduler",
   "description": "persistent event scheduler using mongo as storage",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "keywords": [
     "job",
     "jobs",
@@ -16,7 +16,7 @@
     "url": "git://github.com/jamplify/mongo-scheduler"
   },
   "dependencies": {
-    "cron-parser": "git+ssh://git@github.com/albertdatui/node-schedule.git#bugFixLeapYear",
+    "cron-parser": "0.6.2",
     "lodash": "3.9.1",
     "mongodb": "2.0.34",
     "underscore": "~1.5.2"
