@@ -16,7 +16,7 @@ Usage
 ### Initialization
 
 ```javascript
-var Scheduler = require('mongo-scheduer')
+var Scheduler = require('mongo-scheduler')
 var scheduler = new Scheduler(connection, options)
 ```
 
