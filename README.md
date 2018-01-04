@@ -1,4 +1,4 @@
-mongo-scheduler [![Build Status](https://travis-ci.org/jamplify/mongo-scheduler.png)](https://travis-ci.org/jamplify/mongo-scheduler)
+mongo-scheduler
 ==================
 
 Persistent event scheduler using mongodb as storage
@@ -16,17 +16,17 @@ Usage
 ### Initialization
 
 ```javascript
-var Scheduler = require('mongo-scheduler')
+var Scheduler = require('mongo-scheduer')
 var scheduler = new Scheduler(connection, options)
 ```
 
 __Arguments__
-* connectionString <String or Object> - mongodb connections string (i.e.: "mongodb://localhost:27017/scheduler-db") or a mongoose connection object
-* options <Object> - Options object
+* connectionString \<String or Object> - mongodb connections string (i.e.: "mongodb://localhost:27017/scheduler-db") or a mongoose connection object
+* options \<Object> - Options object
 
 __Valid Options__
-* pollInterval <Number> - Frequency in ms that the scheduler should poll the db. Default: 60000 (1 minute)
-* doNotFire <bool> - If set to true, this instance will only schedule events, not fire them. Default: false
+* pollInterval \<Number> - Frequency in ms that the scheduler should poll the db. Default: 60000 (1 minute)
+* doNotFire \<bool> - If set to true, this instance will only schedule events, not fire them. Default: false
 
 ---------------------------------------
 
@@ -40,23 +40,22 @@ scheduler.schedule(event)
 ```
 
 __Arguments__
-* event <Object> - Event details
-* [callback] <Function>
+* event\<Object> - Event details
+* [callback] \Function> - callabck
 
 __Event Fields__
-* name <String> - Name of event that should be fired
-* [cron] <String> - A cron string representing a frequency this should fire on
-* [collection] <Object> - Info about the documents this event corresponds to
-* [id] <ObjectId> - Value of the _id field of the document this event corresponds to
-* [after] <Date> - Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls
-* [query] <Object> - a MongoDB query expression to select records that this event should be triggered for
-* [data] <Object|Primitive> - Extra data to attach to the event
-
+* name \<String> - Name of event that should be fired
+* [cron] \<String> - A cron string representing a frequency this should fire on
+* [collection] \<Object> - Info about the documents this event corresponds to
+* [id] \<ObjectId> - Value of the _id field of the document this event corresponds to
+* [after] \<Date> - Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls
+* [query] \<Object> - a MongoDB query expression to select records that this event should be triggered for
+* [data] \<Object|Primitive\> - Extra data to attach to the event
 
 
 ---------------------------------------
 
-### on
+### scheduler.on
 
 Event handler.
 
@@ -68,9 +67,69 @@ scheduler.on('breakfast', function(meal, event) {
 })
 ```
 __Arguments__
-* eventName <String> - Name of event
-* handler <Function> - handler
+* eventName \<String> - Name of event
+* handler \<Function> - handler
 
+---------------------------------------
+
+### scheduler.list
+
+List all events.
+
+```javascript
+scheduler.list('breakfast', function(err, events) {
+  // Do something with events
+})
+```
+
+__Arguments__
+* handler \<Function> - handler
+
+---------------------------------------
+
+### scheduler.find
+
+Find an event.
+
+```javascript
+scheduler.find('breakfast', function(err, event) {
+  // Do something with event
+})
+```
+
+__Arguments__
+* eventName \<String> - Name of event
+* handler \<Function> - handler
+
+---------------------------------------
+
+### scheduler.remove
+
+Remove an event.
+
+```javascript
+scheduler.remove('breakfast', function(err, event) {
+  // Event has been removed
+})
+```
+
+__Arguments__
+* eventName \<String> - Name of event
+* handler \<Function> - handler
+
+---------------------------------------
+
+### scheduler.enable
+
+Enable scheduler.
+
+---------------------------------------
+
+### scheduler.disable
+
+Disable scheduler.
+
+---------------------------------------
 
 #### Error handling
 If the scheduler encounters an error it will emit an 'error' event. In this case the handler, will receive two arguments: the Error object, and the event doc (if applicable).
