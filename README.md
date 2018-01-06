@@ -29,8 +29,8 @@ Usage
 ### Initialization
 
 ```javascript
-var Scheduler = require('mongo-scheduler-more')
-var scheduler = new Scheduler(connection, options)
+const Scheduler = require('mongo-scheduler-more')
+const scheduler = new Scheduler(connection, options)
 ```
 
 __Arguments__
@@ -38,6 +38,7 @@ __Arguments__
 * options \<Object> - Options object
 
 __Valid Options__
+* dbname \<String> - You can set (and overright) the name of DataBase to use
 * pollInterval \<Number> - Frequency in ms that the scheduler should poll the db. Default: 60000 (1 minute)
 * doNotFire \<bool> - If set to true, this instance will only schedule events, not fire them. Default: false
 
@@ -48,7 +49,7 @@ __Valid Options__
 Schedules an event.
 
 ```javascript
-var event = {name: 'breakfast' collection: 'meals', after: new Date(), data: 'Fry'}
+const event = {name: 'breakfast' collection: 'meals', after: new Date(), data: 'Fry'}
 scheduler.schedule(event)
 ```
 
@@ -73,7 +74,7 @@ __Event Fields__
 Event handler.
 
 ```javascript
-scheduler.on('breakfast', function(meal, event) {
+scheduler.on('breakfast', (meal, event) => {
   console.log(event.data + " the " + meal.ingredients)
   // Assuming the document {ingredients: "Bacon and Eggs"} is in the meals collection
   // prints "Fry the Bacon and Eggs"
@@ -90,7 +91,7 @@ __Arguments__
 List all events.
 
 ```javascript
-scheduler.list(function(err, events) {
+scheduler.list((err, events) => {
   // Do something with events
 })
 ```
@@ -105,7 +106,7 @@ __Arguments__
 Find an event.
 
 ```javascript
-scheduler.find('breakfast', function(err, event) {
+scheduler.find('breakfast', (err, event) => {
   // Do something with event
 })
 ```
@@ -121,7 +122,7 @@ __Arguments__
 Remove an event.
 
 ```javascript
-scheduler.remove('breakfast', null, null, function(err, event) {
+scheduler.remove('breakfast', null, null, (err, event) => {
   // Event has been removed
 })
 ```
