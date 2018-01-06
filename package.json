@@ -1,7 +1,7 @@
 {
   "name": "mongo-scheduler-more",
   "description": "persistent event scheduler using mongo as storage",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "keywords": [
     "job",
     "jobs",
@@ -19,17 +19,22 @@
   "dependencies": {
     "cron-parser": "2.4.3",
     "lodash": "4.17.4",
+    "mocha": "^1.13.0",
+    "moment": "^2.10.3",
     "mongodb": " 3.0.1",
+    "should": "^7.0.1",
+    "sinon": "^1.8.2",
     "underscore": "1.8.3"
   },
   "devDependencies": {
+    "karma": "^2.0.0",
     "mocha": "~1.13.0",
     "moment": "2.10.3",
     "should": "7.0.1",
     "sinon": "~1.8.1"
   },
   "scripts": {
-    "test": "mocha -u bdd -R spec --recursive -c ./test/"
+    "test": "mocha test/"
   },
   "license": "MIT",
   "engine": {
@@ -39,7 +44,7 @@
     "name": "Jérémy Young",
     "email": "jeremy.young.pro@gmail.com"
   },
-  "contributors": [ ],
+  "contributors": [],
   "jshintConfig": {
     "eqeqeq": true,
     "indent": 2,

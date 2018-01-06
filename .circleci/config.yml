@@ -1,0 +1,45 @@
+version: 2
+jobs:
+  checkout_code:
+    docker:
+      - image: circleci/node:7.10.0
+      - image: mongo:3.4.4
+    working_directory: ~/circleci-mongo-scheduler
+    steps:
+      - checkout
+      - run:
+          name: save SHA to a file
+          command: echo $CIRCLE_SHA1 > .circle-sha
+      - save_cache:
+          key: v1-repo-{{ checksum ".circle-sha" }}
+          paths:
+            - ~/circleci-gaming-gen
+        
+  test:
+    docker:
+      - image: circleci/node:7.10.0
+      - image: mongo:3.4.4
+    working_directory: ~/circleci-mongo-scheduler
+    steps:
+      - run:
+          name: save SHA to a file
+          command: echo $CIRCLE_SHA1 > .circle-sha
+      - restore_cache:
+          key: v1-repo-{{ checksum ".circle-sha" }}
+      - restore_cache:
+          key: v1-dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: install mocha global
+          command: 'sudo npm i -g mocha'
+      - run:
+          name: mocha
+          command: 'npm test'
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - checkout_code
+      - test:
+          requires:
+            - checkout_code
