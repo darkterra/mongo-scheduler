@@ -13,7 +13,7 @@ jobs:
       - save_cache:
           key: v1-repo-{{ checksum ".circle-sha" }}
           paths:
-            - ~/circleci-gaming-gen
+            - ~/circleci-mongo-scheduler
         
   test:
     docker:
