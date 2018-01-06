@@ -1,0 +1,28 @@
+{
+	"title": "mongo-scheduler-more",
+	"name": "mongo-scheduler-more",
+	"homepage": "https://github.com/darkterra/mongo-scheduler",
+	"description": "Persistent event scheduler using mongo as storage",
+	"license": "MIT",
+	"browsers": true,
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/darkterra/mongo-scheduler.git"
+	},
+	"bugs": {
+		"url": "https://github.com/darkterra/mongo-scheduler/issues"
+	},
+	"badges": {
+		"list": [
+		  ["badge", {"image": "https://circleci.com/gh/darkterra/mongo-scheduler.svg?style=svg", "alt": "CircleCI Badge", "url": "https://circleci.com/gh/darkterra/mongo-scheduler", "title": "CircleCI Badge"}],
+		  "---",
+			"npmversion",
+			"npmdownloads",
+		  "---",
+      "nodeico"
+		],
+		"config": {
+		  "npmPackageName": "mongo-scheduler-more"
+		}
+	}
+}

@@ -30,9 +30,9 @@ jobs:
           key: v1-dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install dependencies
-          command: 'npm i'
+          command: 'npm i; sudo npm i -g projectz badges'
       - run:
-          name: mocha
+          name: Tests (mocha)
           command: 'npm test'
 
 workflows:

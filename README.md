@@ -1,5 +1,16 @@
 mongo-scheduler-more [![CircleCI](https://circleci.com/gh/darkterra/mongo-scheduler.svg?style=svg)](https://circleci.com/gh/darkterra/mongo-scheduler)
 ==================
+<!-- BADGES/ -->
+
+<span class="badge-badge"><a href="https://circleci.com/gh/darkterra/mongo-scheduler" title="CircleCI Badge"><img src="https://circleci.com/gh/darkterra/mongo-scheduler.svg?style=svg" alt="CircleCI Badge" /></a></span>
+<br class="badge-separator" />
+<span class="badge-npmversion"><a href="https://npmjs.org/package/mongo-scheduler-more" title="View this project on NPM"><img src="https://img.shields.io/npm/v/mongo-scheduler-more.svg" alt="NPM version" /></a></span>
+<span class="badge-npmdownloads"><a href="https://npmjs.org/package/mongo-scheduler-more" title="View this project on NPM"><img src="https://img.shields.io/npm/dm/mongo-scheduler-more.svg" alt="NPM downloads" /></a></span>
+<br class="badge-separator" />
+<span class="badge-nodeico"><a href="https://www.npmjs.com/package/mongo-scheduler-more" title="Nodei.co badge"><img src="https://nodei.co/npm/mongo-scheduler-more.png" alt="Nodei.co badge" /></a></span>
+
+<!-- /BADGES -->
+
 
 Persistent event scheduler using mongodb as storage
 
