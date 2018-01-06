@@ -29,8 +29,8 @@ jobs:
       - restore_cache:
           key: v1-dependency-cache-{{ checksum "package.json" }}
       - run:
-          name: install mocha global
-          command: 'sudo npm i -g mocha'
+          name: install dependencies
+          command: 'npm i'
       - run:
           name: mocha
           command: 'npm test'
