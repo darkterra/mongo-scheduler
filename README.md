@@ -16,7 +16,7 @@ Persistent event scheduler using mongodb as storage
 
 Provide the scheduler with some storage and timing info and it will emit events with the corresponding document at the right time
 
-This module, extend the original `mongo-sheduler` and work with up to date dependencies plus possibilities to remove an event recorded in database. You can also use the same event name multiple times, as long as the id and / or after is different, otherwise it will update the document
+This module, extend the original `mongo-sheduler` and work with up to date dependencies plus possibilities to remove an event recorded in database. You can also use the same event name multiple times, as long as the "id" and / or "after" is different, otherwise it will update the document
 
 Installation
 ------------
