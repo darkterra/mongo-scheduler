@@ -106,17 +106,37 @@ __Arguments__
 
 ---------------------------------------
 
-### scheduler.find
+### scheduler.findByName
 
-Find an event.
+Find an event by name.
 
 ```javascript
-scheduler.find('breakfast', (err, event) => {
+scheduler.findByName('breakfast', (err, event) => {
   // Do something with event
 })
 ```
 
 __Arguments__
+* eventName \<String> - Name of event
+* handler \<Function> - handler
+
+---------------------------------------
+
+### scheduler.findByStorageId
+
+Find an event by id in storage object and by name.
+
+```javascript
+const event = {name: 'breakfast' id: '5a5dfd6c4879489ce958df0c', after: new Date()}
+scheduler.schedule(event)
+
+scheduler.findByStorageId('5a5dfd6c4879489ce958df0c', 'breakfast', (err, event) => {
+  // Do something with event
+})
+```
+
+__Arguments__
+* storageID \<ObjectId> - Value of the _id field in storage object
 * eventName \<String> - Name of event
 * handler \<Function> - handler
 
