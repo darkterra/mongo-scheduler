@@ -23,6 +23,8 @@ With this module, increase the performance of your Node.JS application !
 You can completely replace your data scanning system in Data Base and more.
 Node.JS is EventDriven, exploit this power within your application!
 
+You can visit my blog [https://darkterra.fr/](https://darkterra.fr/) for [use case](https://darkterra.fr/que-faire-si-node-js-consomme-trop-en-ressources-ram-cpu/) :)
+
 Installation
 ------------
 
