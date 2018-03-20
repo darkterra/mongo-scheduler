@@ -1,166 +1,190 @@
+'use strict';
+
 require('mocha');
 require('should');
 
-var sinon = require("sinon"),
-    assert = require('assert'),
-    mongo = require('mongodb'),
-    moment = require('moment'),
-    Scheduler = require('../index.js'),
-    connection = "mongodb://localhost:27017/mongo-scheduler",
-    _ = require('lodash');
+const _          = require('lodash');
+const sinon      = require("sinon");
+const { expect } = require('chai');
+const mongo      = require('mongodb');
+const moment     = require('moment');
+const Scheduler  = require('../index.js');
+const connection = "mongodb://localhost:27017/mongo-scheduler-more";
+const collectionName = 'scheduled_events';
 
-before(function(done) {
-  this.scheduler = new Scheduler(connection, {pollInterval: 250});
-  
-  const MongoClient     = mongo.MongoClient;
-  const connectionArray = connection.split('/');
-  
-  const database = connectionArray[3] || null;
-  let db;
-  
-  MongoClient.connect(connection, function(err, client) {
+const scheduler       = new Scheduler(connection, {pollInterval: 250});
+const MongoClient     = mongo.MongoClient;
+const connectionArray = connection.split('/');
+const database        = connectionArray[3] || null;
+
+let db;
+let events;
+// let records;
+
+before(done => {
+  MongoClient.connect(connection, (err, client) => {
     if (err) {
       console.error(err);
     }
-    this.db = client.db(database);
     db = client.db(database);
-    db.collection('scheduled_events', function(err, coll) {
+    db.collection('scheduled_events', (err, results) => {
       if (err) {
         console.error(err);
       }
-      this.events = coll;
-      db.createCollection('records', function(err, coll) {
+      events = results;
+        done();
+      // db.createCollection(collectionName, (err, results) => {
+      //   if (err) {
+      //     console.error(err);
+      //   }
+      //   records = results;
+      // });
+    });
+  });
+});
+
+// afterEach(done => {
+//   // scheduler.removeAllListeners();
+
+//   // var cleanRecords = () =>  {
+//   //   records.remove({}, done);
+//   // };
+
+//   events.remove({}, () => {
+//     // setTimeout(cleanRecords, 100);
+//   });
+// });
+
+after((done) => {
+  events.remove({}, () => {
+    // records.remove({}, () => {
+      // db.close();
+      done();
+    // });
+  });
+});
+
+describe('schedule', () => {
+  it('should create an event', done => {
+    const expectation = (olderr, result) => {
+      if (olderr) {
+        console.error(olderr);
+      }
+      if (result) {
+        console.log(result)
+      }
+      events.find().toArray((err, docs) => {
         if (err) {
           console.error(err);
         }
-        this.records = coll;
-        done();
-      }.bind(this));
-    }.bind(this));
-  }.bind(this));
-});
-
-afterEach(function(done) {
-  this.scheduler.removeAllListeners();
-
-  var cleanRecords = function () {
-    this.records.remove({}, done);
-  }.bind(this);
-
-  this.events.remove({}, function() {
-    setTimeout(cleanRecords, 100);
-  });
-});
-
-after(function() {
-  this.events.remove({}, function() {
-    this.records.remove({}, function() {
-      db.close()
-      done()
-    });
-  }.bind(this));
-});
-
-describe('schedule', function() {
-  it('should create an event', function(done) {
-    var expectation = function() {
-      this.events.find().toArray(function(err, docs) {
-        docs.length.should.eql(1);
-        docs[0].event.should.eql('new-event');
+        expect(docs.length).to.be.equal(1);
+        expect(docs[0].event).to.be.equal('new-event');
         done();
       });
-    }.bind(this);
-
-    this.scheduler.schedule({
+    };
+    
+    scheduler.schedule({
       name: 'new-event',
-      collection: 'records',
+      collection: collectionName,
     }, expectation);
   });
-
-  // it('should overwrite an event', function(done) {
-  //   var expectation = function () {
-  //     this.events.find({event: 'new-event'}).toArray(function(err, docs) {
-  //       docs.length.should.eql(1);
-  //       docs[0].event.should.eql('new-event');
-  //       docs[0].conditions.should.eql({after: 100});
-  //       done();
-  //     });
-  //   }.bind(this);
-
-  //   var scheduleDetails = {
-  //     name: 'new-event',
-  //     collection: 'records'
-  //   };
-
-  //   this.scheduler.schedule(scheduleDetails, function() {
-  //     scheduleDetails.after = 100;
-  //     this.scheduler.schedule(scheduleDetails, expectation);
-  //   }.bind(this));
-  // });
+  
+  it('should overwrite an event', (done) => {
+    const expectation = () =>  {
+      events.find({event: 'new-event'}).toArray((err, docs) => {
+        if (err) {
+          console.error(err);
+        }
+        
+        expect(docs.length).to.be.equal(1);
+        expect(docs[0].event).to.be.equal('new-event');
+        expect(docs[0].conditions).to.be.equal({after: 100});
+        done();
+      });
+    };
+    
+    var scheduleDetails = {
+      name: 'new-event',
+      collection: collectionName
+    };
+    
+    scheduler.schedule(scheduleDetails, () => {
+      scheduleDetails.after = 100;
+      scheduler.schedule(scheduleDetails, expectation);
+    });
+  });
 });
 
-describe('emitter', function() {
+describe('emitter', () => {
   var details = {
     name: 'awesome',
-    collection: 'records'
+    collection: collectionName
   };
 
-  it('should emit an error', function() {
-       var running = true;
-
-    sinon.stub(this.records, 'find').yields(new Error("Cannot find"));
-
-    this.scheduler.on('error', function(err, event) {
+  it('should emit an error', (done) => {
+   let running = true;
+   
+    sinon.stub(records, 'find').yields(new Error("Cannot find"));
+    
+    scheduler.on('error', (err, event) => {
       err.message.should.eql('Cannot find');
-      event.should.eql({event: 'awesome', storage: {collection: 'records'}});
-
-      if(running) { this.records.find.restore(); done() }
+      event.should.eql({event: 'awesome', storage: {collection: collectionName}});
+      
+      if(running) {
+        records.find.restore();
+        done();
+        
+      }
       running = false;
-    }.bind(this));
-
-    this.records.insert({message: 'This is a record'}, function() {
-      this.scheduler.schedule(details);
-    }.bind(this));
+    });
+    
+    records.insert({message: 'This is a record'}, () => {
+      scheduler.schedule(details);
+    });
   });
 
-  it('should emit an event with matching records', function(done) {
-    var running = true;
-    this.scheduler.on('awesome', function(doc) {
+  it('should emit an event with matching records', done => {
+    let running = true;
+    scheduler.on('awesome', (doc) => {
       doc[0].message.should.eql('This is a record');
-      if(running) done();
+      
+      if(running) {
+        done();
+      }
+      
       running = false;
     });
 
-    this.records.insert({message: 'This is a record'}, function() {
-      this.scheduler.schedule(details);
-    }.bind(this));
+    records.insert({message: 'This is a record'}, () => {
+      scheduler.schedule(details);
+    });
   });
 
-  it("emits an event with multiple records", function(done) {
+  it("emits an event with multiple records", done => {
     var running = true;
-    this.scheduler.on('awesome', function(docs) {
+    scheduler.on('awesome', docs => {
       docs.length.should.eql(2);
       if(running) done();
       running = false;
     });
 
-    this.records.insert([
+    records.insert([
       {message: 'This is a record'},
       {message: 'Another Record'}
-    ], function() {
-      this.scheduler.schedule(details);
-    }.bind(this));
+    ], () => {
+      scheduler.schedule(details);
+    });
 
     done();
   });
 
-  it('emits the original event', function(done) {
+  it('emits the original event', done => {
     var additionalDetails = _.extend({data: 'MyData'}, details);
 
     var running = true;
-    this.scheduler.on('awesome', function(doc, event) {
+    scheduler.on('awesome', (doc, event) => {
       event.event.should.eql('awesome');
-      event.storage.should.eql({collection: 'records'});
+      event.storage.should.eql({collection: collectionName});
       event.data.should.eql('MyData');
 
       if(running) done();
@@ -168,112 +192,118 @@ describe('emitter', function() {
     });
 
 
-    this.records.insert({message: 'This is a record'}, function() {
-      this.scheduler.schedule(additionalDetails);
-    }.bind(this));
+    records.insert({message: 'This is a record'}, () => {
+      scheduler.schedule(additionalDetails);
+    });
   });
 
-  it('deletes executed events', function(done) {
-    var expectation = function() {
-      this.events.find({event: 'awesome'}).toArray(function(err, docs) {
+  it('deletes executed events', done => {
+    var expectation = () => {
+      events.find({event: 'awesome'}).toArray((err, docs) => {
+        if (err) {
+          console.error(err);
+        }
         docs.length.should.eql(0);
         done();
       });
-    }.bind(this);
+    };
 
-    this.scheduler.on('awesome', function() {
+    scheduler.on('awesome', () => {
       setTimeout(expectation, 1050);
-    }.bind(this));
+    });
 
-    this.records.insert({message: 'This is a record'}, function() {
-      this.scheduler.schedule(details);
-    }.bind(this));
+    records.insert({message: 'This is a record'}, () => {
+      scheduler.schedule(details);
+    });
   });
 
-  it('emits an empty event', function(done) {
-    this.scheduler.on('empty', function(doc, event) {
+  it('emits an empty event', done => {
+    scheduler.on('empty', (doc, event) => {
       assert(!doc, "Doc should be null");
       assert(!event.data, "data should be null");
       event.event.should.eql('empty');
       done();
     });
 
-    this.scheduler.schedule({name: 'empty'});
+    scheduler.schedule({name: 'empty'});
   });
 
-  describe("with emitPerDoc", function() {
+  describe("with emitPerDoc", () => {
     var additionalDetails = _.extend({
       options: {emitPerDoc: true}
     }, details);
 
-    it('should emit an event per doc', function(done) {
+    it('should emit an event per doc', done => {
       var running = true;
-      this.scheduler.on('awesome', function(doc) {
+      scheduler.on('awesome', doc => {
         doc.message.should.eql('This is a record');
         if(running) done();
         running = false;
       });
-      this.records.insert([
+      records.insert([
         {message: 'This is a record'},
         {message: 'This is a record'}
-      ], function() {
-        this.scheduler.schedule(additionalDetails);
-      }.bind(this));
+      ], () => {
+        scheduler.schedule(additionalDetails);
+      });
     });
   });
 
-  describe("with a query", function() {
+  describe("with a query", () => {
     var additionalDetails = _.extend({query: {}}, details);
 
-    it('should emit an event with matching records', function(done) {
+    it('should emit an event with matching records', done => {
       var running = true;
-      this.scheduler.on('awesome', function(docs) {
+      scheduler.on('awesome', docs => {
         docs[0].message.should.eql('This is a record');
         if(running) done();
         running = false;
       });
 
-      this.records.insert({message: 'This is a record'}, function() {
-        this.scheduler.schedule(additionalDetails);
-      }.bind(this));
+      records.insert({message: 'This is a record'}, () => {
+        scheduler.schedule(additionalDetails);
+      });
     });
 
-    it("emits an event with multiple records", function(done) {
+    it("emits an event with multiple records", done => {
       var running = true;
-      this.scheduler.on('awesome', function(docs) {
+      scheduler.on('awesome', docs => {
         docs.length.should.eql(2);
         if(running) done();
         running = false;
       });
 
-      this.records.insert([
+      records.insert([
         {message: 'This is a record'},
         {message: 'Another Record'}
-      ], function() {
-        this.scheduler.schedule(additionalDetails);
-      }.bind(this));
+      ], () => {
+        scheduler.schedule(additionalDetails);
+      });
     });
   });
 
-  describe('with cron string', function() {
-    it('updates the after condition', function() {
+  describe('with cron string', () => {
+    it('updates the after condition', (done) => {
       var expectedDate = moment().hours(23).startOf('hour').toDate();
-      var expectation = function() {
-        this.events.find({event: 'empty'}).toArray(function(err, docs) {
+      var expectation = () => {
+        events.find({event: 'empty'}).toArray((err, docs) => {
+          if (err) {
+            console.error(err);
+          }
           docs.length.should.eql(1);
           var saniDate = moment(docs[0].conditions.after).startOf('second');
 
           docs[0].status.should.eql('ready');
           saniDate.toDate.should.eql(expectedDate);
-          done()
+          done();
         });
-      }.bind(this);
+      };
 
-      this.scheduler.on('empty', function() {
+      scheduler.on('empty', () => {
         setTimeout(expectation, 50);
-      }.bind(this));
+      });
 
-      this.events.insert({
+      events.insert({
         name: 'empty',
         storage: {},
         conditions: { after: new Date() },

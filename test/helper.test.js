@@ -66,21 +66,21 @@ describe('schedule builder', function() {
 
   describe('with cron property', function() {
     beforeEach(function() {
-      this.cronDetails = _.extend({cron: '0 23 * * *'}, this.details);
+      this.cronDetails = _.extend({cron: '0 0 23 * * *'}, this.details);
     });
 
     it('should include cron string in doc', function() {
       var doc = helper.buildSchedule(this.cronDetails).doc;
-      doc.cron.should.eql('0 23 * * *');
+      doc.cron.should.eql('0 0 23 * * *');
     });
 
-    // it('should calculate next tick', function() {
-    //   var doc = helper.buildSchedule(this.cronDetails).doc,
-    //       nextTick = moment().hours(23).startOf('hour').toDate(),
-    //       sanitizedDate = moment(doc.conditions.after).startOf('second');
+    it('should calculate next tick', function() {
+      var doc = helper.buildSchedule(this.cronDetails).doc,
+          nextTick = moment().hours(23).startOf('hour').toDate(),
+          sanitizedDate = moment(doc.conditions.after).startOf('second');
 
-    //   sanitizedDate.toDate().should.eql(nextTick);
-    // });
+      sanitizedDate.toDate().should.eql(nextTick);
+    });
   });
 });
 

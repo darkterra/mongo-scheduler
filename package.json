@@ -1,7 +1,7 @@
 {
   "name": "mongo-scheduler-more",
   "description": "Persistent event scheduler using mongo as storage",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "keywords": [
     "job",
     "jobs",
@@ -27,6 +27,7 @@
     "underscore": "1.8.3"
   },
   "devDependencies": {
+    "chai": "^4.1.2",
     "karma": "^2.0.0",
     "mocha": "~1.13.0",
     "moment": "2.10.3",
@@ -34,7 +35,7 @@
     "sinon": "~1.8.1"
   },
   "scripts": {
-    "test": "projectz compile;mocha test/"
+    "test": "projectz compile; mocha -R nyan test/"
   },
   "license": "MIT",
   "engine": {
@@ -44,7 +45,7 @@
   "contributors": [
     "Jan Paul Erkelens (https://github.com/jperkelens)",
     "Matt Roman (https://github.com/romanmt)",
-    "darkterra (https://github.com/darkterra)"
+    "darkterra (http://darkterra.fr)"
   ],
   "jshintConfig": {
     "eqeqeq": true,
