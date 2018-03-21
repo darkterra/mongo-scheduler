@@ -10,7 +10,6 @@ const mongo      = require('mongodb');
 const moment     = require('moment');
 const Scheduler  = require('../index.js');
 const connection = "mongodb://localhost:27017/mongo-scheduler-more";
-const collectionName = 'scheduled_events';
 
 const scheduler       = new Scheduler(connection, {pollInterval: 250});
 const MongoClient     = mongo.MongoClient;
@@ -19,7 +18,7 @@ const database        = connectionArray[3] || null;
 
 let db;
 let events;
-// let records;
+let records;
 
 before(done => {
   MongoClient.connect(connection, (err, client) => {
@@ -32,46 +31,48 @@ before(done => {
         console.error(err);
       }
       events = results;
+      db.createCollection('records', (err, results) => {
+        if (err) {
+          console.error(err);
+        }
+        records = results;
         done();
-      // db.createCollection(collectionName, (err, results) => {
-      //   if (err) {
-      //     console.error(err);
-      //   }
-      //   records = results;
-      // });
+      });
     });
   });
 });
 
-// afterEach(done => {
-//   // scheduler.removeAllListeners();
+afterEach(done => {
+  scheduler.removeAllListeners();
 
-//   // var cleanRecords = () =>  {
-//   //   records.remove({}, done);
-//   // };
+  var cleanRecords = () =>  {
+    records.remove({}, done);
+  };
 
-//   events.remove({}, () => {
-//     // setTimeout(cleanRecords, 100);
-//   });
-// });
+  events.remove({}, () => {
+    setTimeout(cleanRecords, 100);
+  });
+});
 
 after((done) => {
   events.remove({}, () => {
-    // records.remove({}, () => {
+    records.remove({}, () => {
       // db.close();
       done();
-    // });
+    });
   });
 });
 
 describe('schedule', () => {
+  const scheduleDetails = {
+    name: 'new-event',
+    collection: 'records'
+  };
+    
   it('should create an event', done => {
-    const expectation = (olderr, result) => {
+    const expectation = (olderr, oldresult) => {
       if (olderr) {
-        console.error(olderr);
-      }
-      if (result) {
-        console.log(result)
+        console.error('olderr: ', olderr);
       }
       events.find().toArray((err, docs) => {
         if (err) {
@@ -83,14 +84,14 @@ describe('schedule', () => {
       });
     };
     
-    scheduler.schedule({
-      name: 'new-event',
-      collection: collectionName,
-    }, expectation);
+    scheduler.schedule(scheduleDetails, expectation);
   });
   
   it('should overwrite an event', (done) => {
-    const expectation = () =>  {
+    const expectation = (newerr, newresult) =>  {
+      if (newerr) {
+        console.error('newerr: ', newerr);
+      }
       events.find({event: 'new-event'}).toArray((err, docs) => {
         if (err) {
           console.error(err);
@@ -98,40 +99,38 @@ describe('schedule', () => {
         
         expect(docs.length).to.be.equal(1);
         expect(docs[0].event).to.be.equal('new-event');
-        expect(docs[0].conditions).to.be.equal({after: 100});
+        expect(docs[0].data).to.be.equal(100);
         done();
       });
     };
     
-    var scheduleDetails = {
-      name: 'new-event',
-      collection: collectionName
-    };
-    
-    scheduler.schedule(scheduleDetails, () => {
-      scheduleDetails.after = 100;
+    scheduler.schedule(scheduleDetails, (olderr, result) =>  {
+      if (olderr) {
+        console.error('olderr: ', olderr);
+      }
+      scheduleDetails.data = 100;
       scheduler.schedule(scheduleDetails, expectation);
     });
   });
 });
 
 describe('emitter', () => {
-  var details = {
+  const details = {
     name: 'awesome',
-    collection: collectionName
+    collection: 'records'
   };
 
-  it('should emit an error', (done) => {
-   let running = true;
+  it.skip('should emit an error', (done) => {
+    let running = true;
    
     sinon.stub(records, 'find').yields(new Error("Cannot find"));
     
     scheduler.on('error', (err, event) => {
-      err.message.should.eql('Cannot find');
-      event.should.eql({event: 'awesome', storage: {collection: collectionName}});
+      expect(err.message).to.be.equal('Cannot find');
+      expect(event).to.be.equal({event: 'awesome', storage: {collection: 'records'}});
       
       if(running) {
-        records.find.restore();
+        // records.find.restore();
         done();
         
       }
@@ -146,7 +145,7 @@ describe('emitter', () => {
   it('should emit an event with matching records', done => {
     let running = true;
     scheduler.on('awesome', (doc) => {
-      doc[0].message.should.eql('This is a record');
+      expect(doc[0].message).to.be.equal('This is a record');
       
       if(running) {
         done();
@@ -184,7 +183,7 @@ describe('emitter', () => {
     var running = true;
     scheduler.on('awesome', (doc, event) => {
       event.event.should.eql('awesome');
-      event.storage.should.eql({collection: collectionName});
+      event.storage.should.eql({collection: 'records'});
       event.data.should.eql('MyData');
 
       if(running) done();
@@ -198,12 +197,12 @@ describe('emitter', () => {
   });
 
   it('deletes executed events', done => {
-    var expectation = () => {
+    const expectation = () => {
       events.find({event: 'awesome'}).toArray((err, docs) => {
         if (err) {
           console.error(err);
         }
-        docs.length.should.eql(0);
+        expect(docs.length).to.be.equal(0);
         done();
       });
     };
@@ -219,9 +218,9 @@ describe('emitter', () => {
 
   it('emits an empty event', done => {
     scheduler.on('empty', (doc, event) => {
-      assert(!doc, "Doc should be null");
-      assert(!event.data, "data should be null");
-      event.event.should.eql('empty');
+      expect(doc).to.be.a('null', "Doc should be null");
+      expect(event.data).to.be.a('null', "data should be null");
+      expect(event.event).to.be.equal('empty');
       done();
     });
 
@@ -282,7 +281,7 @@ describe('emitter', () => {
     });
   });
 
-  describe('with cron string', () => {
+  describe.skip('with cron string', () => {
     it('updates the after condition', (done) => {
       var expectedDate = moment().hours(23).startOf('hour').toDate();
       var expectation = () => {
