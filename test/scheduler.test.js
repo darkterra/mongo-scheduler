@@ -11,17 +11,18 @@ const moment     = require('moment');
 const Scheduler  = require('../index.js');
 const connection = "mongodb://localhost:27017/mongo-scheduler-more";
 
-const scheduler       = new Scheduler(connection, {pollInterval: 250});
+const scheduler       = new Scheduler(connection, { pollInterval: 250 });
 const MongoClient     = mongo.MongoClient;
 const connectionArray = connection.split('/');
 const database        = connectionArray[3] || null;
+const options         = { useNewUrlParser: true };
 
 let db;
 let events;
 let records;
 
 before(done => {
-  MongoClient.connect(connection, (err, client) => {
+  MongoClient.connect(connection, options, (err, client) => {
     if (err) {
       console.error(err);
     }

@@ -1,4 +1,4 @@
-mongo-scheduler-more [![CircleCI](https://circleci.com/gh/darkterra/mongo-scheduler.svg?style=svg)](https://circleci.com/gh/darkterra/mongo-scheduler)
+mongo-scheduler-more
 ==================
 <!-- BADGES/ -->
 
