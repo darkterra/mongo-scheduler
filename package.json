@@ -42,7 +42,7 @@
   "contributors": [
     "Jan Paul Erkelens (https://github.com/jperkelens)",
     "Matt Roman (https://github.com/romanmt)",
-    "darkterra (http://darkterra.fr)"
+    "Jérémy Young (http://darkterra.fr)"
   ],
   "jshintConfig": {
     "eqeqeq": true,
