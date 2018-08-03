@@ -19,17 +19,17 @@
   "dependencies": {
     "cron-parser": "^2.5.0",
     "lodash": "^4.17.10",
-    "moment": "^2.10.3",
-    "mongodb": "^3.1.0-beta4",
-    "underscore": "^1.9.0"
+    "moment": "^2.22.2",
+    "mongodb": "^3.1.1",
+    "underscore": "^1.9.1"
   },
   "devDependencies": {
     "chai": "^4.1.2",
-    "karma": "^2.0.0",
+    "karma": "^2.0.5",
     "mocha": "^5.2.0",
     "projectz": "^1.4.0",
-    "should": "^13.2.1",
-    "sinon": "^5.0.10"
+    "should": "^13.2.3",
+    "sinon": "^6.1.4"
   },
   "scripts": {
     "test": "projectz compile; mocha -R nyan test/ --exit"
