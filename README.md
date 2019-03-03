@@ -41,13 +41,20 @@ const scheduler = new Scheduler(connection, options)
 ```
 
 __Arguments__
-* connectionString \<String or Object> - mongodb connections string (i.e.: "mongodb://localhost:27017/scheduler-db") or a mongoose connection object
-* options \<Object> - Options object
+* **connection** \<String or Object> - mongodb connections string (i.e.: "mongodb://localhost:27017/scheduler-db") or a mongoose connection object
+* **options** \<Object> - Options object
 
-__Valid Options__
-* dbname \<String> - You can set (and overright) the name of DataBase to use
-* pollInterval \<Number> - Frequency in ms that the scheduler should poll the db. Default: 60000 (1 minute)
-* doNotFire \<bool> - If set to true, this instance will only schedule events, not fire them. Default: false
+__Valid Options Object__
+* **dbname** \<String> - You can set (and overright) the name of DataBase to use _(optional if you precise the dbname in connection string)_
+* **pollInterval** \<Number> - Frequency in ms that the scheduler should poll the db. `Default: 60000 (1 minute)`
+* **doNotFire** \<Bool> - If set to true, this instance will only schedule events, not fire them. `Default: false`
+
+* useNewUrlParser \<Bool> - `Driver Option` - If set to false, the mongo driver use the old parser. `Default: true`
+* loggerLevel \<String> - `Driver Option` - The logging level (error/warn/info/debug). _(optional)_
+* logger \<Object> - `Driver Option` - Custom logger object. _(optional)_
+* validateOptions \<Bool> - `Driver Option` - Validate MongoClient passed in options for correctness. `Default: false` _(only if you use the connection **string**)_
+* auth \<Object> - `Driver Option` - { user: 'your_ddb_user', password: 'your_ddb_password'}. _(optional)_
+* authMechanism \<String> - `Driver Option` - Mechanism for authentication: MDEFAULT, GSSAPI, PLAIN, MONGODB-X509, or SCRAM-SHA-1. _(optional)_
 
 ---------------------------------------
 
@@ -56,7 +63,7 @@ __Valid Options__
 Schedules an event.
 
 ```javascript
-const event = {name: 'breakfast', collection: 'meals', after: new Date(), data: 'Fry'}
+const event = { name: 'breakfast', collection: 'meals', after: new Date(), data: 'Fry' }
 scheduler.schedule(event)
 ```
 
@@ -129,7 +136,7 @@ __Arguments__
 Find an event by id in storage object and by name.
 
 ```javascript
-const event = {name: 'breakfast' id: '5a5dfd6c4879489ce958df0c', after: new Date()}
+const event = { name: 'breakfast' id: '5a5dfd6c4879489ce958df0c', after: new Date() }
 scheduler.schedule(event)
 
 scheduler.findByStorageId('5a5dfd6c4879489ce958df0c', 'breakfast', (err, event) => {
