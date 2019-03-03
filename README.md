@@ -56,7 +56,7 @@ __Valid Options__
 Schedules an event.
 
 ```javascript
-const event = {name: 'breakfast' collection: 'meals', after: new Date(), data: 'Fry'}
+const event = {name: 'breakfast', collection: 'meals', after: new Date(), data: 'Fry'}
 scheduler.schedule(event)
 ```
 
