@@ -1,7 +1,7 @@
 {
   "name": "mongo-scheduler-more",
   "description": "Persistent event scheduler using mongo as storage",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "keywords": [
     "job",
     "jobs",
@@ -17,19 +17,18 @@
     "url": "git://github.com/darkterra/mongo-scheduler.git"
   },
   "dependencies": {
-    "cron-parser": "^2.5.0",
-    "lodash": "^4.17.10",
-    "moment": "^2.22.2",
-    "mongodb": "^3.1.1",
-    "underscore": "^1.9.1"
+    "cron-parser": "^2.7.3",
+    "lodash": "^4.17.11",
+    "moment": "^2.24.0",
+    "mongodb": "^3.1.13"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
-    "karma": "^2.0.5",
-    "mocha": "^5.2.0",
-    "projectz": "^1.4.0",
+    "chai": "^4.2.0",
+    "karma": "^4.0.1",
+    "mocha": "^6.0.2",
+    "projectz": "^1.7.4",
     "should": "^13.2.3",
-    "sinon": "^6.1.4"
+    "sinon": "^7.2.7"
   },
   "scripts": {
     "test": "projectz compile; mocha -R nyan test/ --exit"
