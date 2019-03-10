@@ -24,14 +24,18 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "codacy-coverage": "^3.4.0",
     "karma": "^4.0.1",
     "mocha": "^6.0.2",
+    "nyc": "^13.3.0",
     "projectz": "^1.7.4",
     "should": "^13.2.3",
     "sinon": "^7.2.7"
   },
   "scripts": {
-    "test": "projectz compile; mocha -R nyan test/ --exit"
+    "test": "projectz compile; mocha -R nyan test/ --exit",
+    "test:coverage": "projectz compile; nyc --reporter=lcov mocha -R nyan test/ --exit",
+    "test:all": "npm run test:coverage; cat ./coverage/lcov.info | codacy-coverage && rm -rf ./coverage"
   },
   "license": "MIT",
   "engine": {
