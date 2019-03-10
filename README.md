@@ -1,5 +1,8 @@
 mongo-scheduler-more
 ==================
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/51fe243879a94a11807318338aac7d8e)](https://app.codacy.com/app/darkterra/mongo-scheduler?utm_source=github.com&utm_medium=referral&utm_content=darkterra/mongo-scheduler&utm_campaign=Badge_Grade_Settings)
+
 <!-- BADGES/ -->
 
 <span class="badge-badge"><a href="https://circleci.com/gh/darkterra/mongo-scheduler" title="CircleCI Badge"><img src="https://circleci.com/gh/darkterra/mongo-scheduler.svg?style=svg" alt="CircleCI Badge" /></a></span>
