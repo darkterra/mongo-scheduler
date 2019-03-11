@@ -256,7 +256,10 @@ describe('emitter', () => {
       var running = true;
       scheduler.on('awesome', docs => {
         docs[0].message.should.eql('This is a record');
-        if(running) done();
+        if(running) {
+          done();
+        }
+        
         running = false;
       });
 

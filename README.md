@@ -55,7 +55,7 @@ const scheduler = new Scheduler(connection, options);
 *   loggerLevel \<String> - `Driver Option` - The logging level (error/warn/info/debug). _(optional)_
 *   logger \<Object> - `Driver Option` - Custom logger object. _(optional)_
 *   validateOptions \<Bool> - `Driver Option` - Validate MongoClient passed in options for correctness. `Default: false` _(only if you use the connection **string**)_
-*   auth \<Object> - `Driver Option` - { user: 'your_ddb_user', password: 'your_ddb_password'}. _(optional)_
+*   auth \<Object> - `Driver Option` - { user: 'your\_ddb\_user', password: 'your\_ddb\_password'}. _(optional)_
 *   authMechanism \<String> - `Driver Option` - Mechanism for authentication: MDEFAULT, GSSAPI, PLAIN, MONGODB-X509, or SCRAM-SHA-1. _(optional)_
 
 ---------------------------------------
@@ -77,7 +77,7 @@ scheduler.schedule(event)
 *   name \<String> - Name of event that should be fired.
 *   cron \<String> - A cron string representing a frequency this should fire on. _(optional)_
 *   collection \<Object> - Info about the documents this event corresponds to. _(optional)_
-*   id \<ObjectId> - Value of the _id field of the document this event corresponds to. _(optional)_
+*   id \<ObjectId> - Value of the \_id field of the document this event corresponds to. _(optional)_
 *   after \<Date> - Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls. _(optional)_
 *   query \<Object> - a MongoDB query expression to select records that this event should be triggered for. _(optional)_
 *   data \<Object|Primitive\> - Extra data to attach to the event. _(optional)_
@@ -146,9 +146,9 @@ scheduler.findByStorageId('5a5dfd6c4879489ce958df0c', 'breakfast', (err, event) 
 ```
 
 **Arguments**
-* storageID \<ObjectId> - Value of the _id field in storage object.
-* eventName \<String> - Name of event.
-* handler \<Function> - handler.
+*   storageID \<ObjectId> - Value of the _id field in storage object.
+*   eventName \<String> - Name of event.
+*   handler \<Function> - handler.
 
 ---------------------------------------
 
