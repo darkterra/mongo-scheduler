@@ -17,7 +17,7 @@
     "url": "git://github.com/darkterra/mongo-scheduler.git"
   },
   "dependencies": {
-    "cron-parser": "^2.7.3",
+    "cron-parser": "^2.8.0",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "mongodb": "^3.1.13"
