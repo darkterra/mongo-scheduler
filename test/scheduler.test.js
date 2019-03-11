@@ -237,7 +237,10 @@ describe('emitter', () => {
       var running = true;
       scheduler.on('awesome', doc => {
         doc.message.should.eql('This is a record');
-        if(running) done();
+        if(running) {
+          done();
+        }
+        
         running = false;
       });
       records.insert([
