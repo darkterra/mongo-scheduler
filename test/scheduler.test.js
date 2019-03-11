@@ -4,12 +4,12 @@ require('mocha');
 require('should');
 
 const _          = require('lodash');
-const sinon      = require("sinon");
+const sinon      = require('sinon');
 const { expect } = require('chai');
 const mongo      = require('mongodb');
 const moment     = require('moment');
 const Scheduler  = require('../index.js');
-const connection = "mongodb://localhost:27017/mongo-scheduler-more";
+const connection = 'mongodb://localhost:27017/mongo-scheduler-more';
 
 const scheduler       = new Scheduler(connection, { pollInterval: 250 });
 const MongoClient     = mongo.MongoClient;
@@ -124,7 +124,7 @@ describe('emitter', () => {
   it.skip('should emit an error', (done) => {
     let running = true;
    
-    sinon.stub(records, 'find').yields(new Error("Cannot find"));
+    sinon.stub(records, 'find').yields(new Error('Cannot find'));
     
     scheduler.on('error', (err, event) => {
       expect(err.message).to.be.equal('Cannot find');
@@ -160,7 +160,7 @@ describe('emitter', () => {
     });
   });
 
-  it("emits an event with multiple records", done => {
+  it('emits an event with multiple records', done => {
     var running = true;
     scheduler.on('awesome', docs => {
       docs.length.should.eql(2);
@@ -219,8 +219,8 @@ describe('emitter', () => {
 
   it('emits an empty event', done => {
     scheduler.on('empty', (doc, event) => {
-      expect(doc).to.be.a('null', "Doc should be null");
-      expect(event.data).to.be.a('null', "data should be null");
+      expect(doc).to.be.a('null', 'Doc should be null');
+      expect(event.data).to.be.a('null', 'data should be null');
       expect(event.event).to.be.equal('empty');
       done();
     });
@@ -228,7 +228,7 @@ describe('emitter', () => {
     scheduler.schedule({name: 'empty'});
   });
 
-  describe("with emitPerDoc", () => {
+  describe('with emitPerDoc', () => {
     var additionalDetails = _.extend({
       options: {emitPerDoc: true}
     }, details);
@@ -249,7 +249,7 @@ describe('emitter', () => {
     });
   });
 
-  describe("with a query", () => {
+  describe('with a query', () => {
     var additionalDetails = _.extend({query: {}}, details);
 
     it('should emit an event with matching records', done => {
@@ -265,11 +265,13 @@ describe('emitter', () => {
       });
     });
 
-    it("emits an event with multiple records", done => {
+    it('emits an event with multiple records', done => {
       var running = true;
       scheduler.on('awesome', docs => {
         docs.length.should.eql(2);
-        if(running) done();
+        if(running) {
+          done();
+        }
         running = false;
       });
 
@@ -311,4 +313,4 @@ describe('emitter', () => {
       });
     });
   });
-})
+});

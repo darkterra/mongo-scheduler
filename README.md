@@ -1,21 +1,21 @@
 mongo-scheduler-more
 ==================
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/51fe243879a94a11807318338aac7d8e)](https://app.codacy.com/app/darkterra/mongo-scheduler?utm_source=github.com&utm_medium=referral&utm_content=darkterra/mongo-scheduler&utm_campaign=Badge_Grade_Settings)
-
 <!-- BADGES/ -->
 
-<span class="badge-badge"><a href="https://circleci.com/gh/darkterra/mongo-scheduler" title="CircleCI Badge"><img src="https://circleci.com/gh/darkterra/mongo-scheduler.svg?style=svg" alt="CircleCI Badge" /></a></span>
-<br class="badge-separator" />
 <span class="badge-npmversion"><a href="https://npmjs.org/package/mongo-scheduler-more" title="View this project on NPM"><img src="https://img.shields.io/npm/v/mongo-scheduler-more.svg" alt="NPM version" /></a></span>
 <span class="badge-npmdownloads"><a href="https://npmjs.org/package/mongo-scheduler-more" title="View this project on NPM"><img src="https://img.shields.io/npm/dm/mongo-scheduler-more.svg" alt="NPM downloads" /></a></span>
+<br class="badge-separator" />
+<span class="badge-badge"><a href="https://circleci.com/gh/darkterra/mongo-scheduler" title="CircleCI Badge"><img src="https://circleci.com/gh/darkterra/mongo-scheduler.svg?style=svg" alt="CircleCI Badge" /></a></span>
+<span class="badge-badge"><a href="https://app.codacy.com/app/darkterra/mongo-scheduler?utm_source=github.com&utm_medium=referral&utm_content=darkterra/mongo-scheduler&utm_campaign=Badge_Grade_Settings" title="Codacy Badge"><img src="https://api.codacy.com/project/badge/Grade/51fe243879a94a11807318338aac7d8e" alt="Codacy Badge" /></a></span>
+<span class="badge-badge"><a href="https://www.codacy.com/app/darkterra/mongo-scheduler?utm_source=github.com&utm_medium=referral&utm_content=darkterra/mongo-scheduler&utm_campaign=Badge_Coverage" title="Codacy Badge"><img src="https://api.codacy.com/project/badge/Coverage/22f5c7a46aba46ee822ef36b910c2d06" alt="Codacy Badge" /></a></span>
 <br class="badge-separator" />
 <span class="badge-nodeico"><a href="https://www.npmjs.com/package/mongo-scheduler-more" title="Nodei.co badge"><img src="https://nodei.co/npm/mongo-scheduler-more.png" alt="Nodei.co badge" /></a></span>
 
 <!-- /BADGES -->
 
 
-Persistent event scheduler using mongodb as storage
+Persistent event scheduler using mongodb as storage.
 
 Provide the scheduler with some storage and timing info and it will emit events with the corresponding document at the right time
 
@@ -39,25 +39,24 @@ Usage
 ### Initialization
 
 ```javascript
-const Scheduler = require('mongo-scheduler-more')
-const scheduler = new Scheduler(connection, options)
+const Scheduler = require('mongo-scheduler-more');
+const scheduler = new Scheduler(connection, options);
 ```
 
-__Arguments__
-* **connection** \<String or Object> - mongodb connections string (i.e.: "mongodb://localhost:27017/scheduler-db") or a mongoose connection object
-* **options** \<Object> - Options object
+**Arguments**
+  * **connection** \<String or Object> - mongodb connections string (i.e.: "mongodb://localhost:27017/scheduler-db") or a mongoose connection object.
+  * **options** \<Object> - Options object.
 
-__Valid Options Object__
-* **dbname** \<String> - You can set (and overright) the name of DataBase to use _(optional if you precise the dbname in connection string)_
-* **pollInterval** \<Number> - Frequency in ms that the scheduler should poll the db. `Default: 60000 (1 minute)`
-* **doNotFire** \<Bool> - If set to true, this instance will only schedule events, not fire them. `Default: false`
-
-* useNewUrlParser \<Bool> - `Driver Option` - If set to false, the mongo driver use the old parser. `Default: true`
-* loggerLevel \<String> - `Driver Option` - The logging level (error/warn/info/debug). _(optional)_
-* logger \<Object> - `Driver Option` - Custom logger object. _(optional)_
-* validateOptions \<Bool> - `Driver Option` - Validate MongoClient passed in options for correctness. `Default: false` _(only if you use the connection **string**)_
-* auth \<Object> - `Driver Option` - { user: 'your_ddb_user', password: 'your_ddb_password'}. _(optional)_
-* authMechanism \<String> - `Driver Option` - Mechanism for authentication: MDEFAULT, GSSAPI, PLAIN, MONGODB-X509, or SCRAM-SHA-1. _(optional)_
+**Valid Options Object**
+  * **dbname** \<String> - You can set (and overright) the name of DataBase to use _(optional if you precise the dbname in connection string)_.
+  * **pollInterval** \<Number> - Frequency in ms that the scheduler should poll the db. `Default: 60000 (1 minute)`
+  * **doNotFire** \<Bool> - If set to true, this instance will only schedule events, not fire them. `Default: false`
+  * useNewUrlParser \<Bool> - `Driver Option` - If set to false, the mongo driver use the old parser. `Default: true`
+  * loggerLevel \<String> - `Driver Option` - The logging level (error/warn/info/debug). _(optional)_
+  * logger \<Object> - `Driver Option` - Custom logger object. _(optional)_
+  * validateOptions \<Bool> - `Driver Option` - Validate MongoClient passed in options for correctness. `Default: false` _(only if you use the connection **string**)_
+  * auth \<Object> - `Driver Option` - { user: 'your_ddb_user', password: 'your_ddb_password'}. _(optional)_
+  * authMechanism \<String> - `Driver Option` - Mechanism for authentication: MDEFAULT, GSSAPI, PLAIN, MONGODB-X509, or SCRAM-SHA-1. _(optional)_
 
 ---------------------------------------
 
@@ -70,19 +69,18 @@ const event = { name: 'breakfast', collection: 'meals', after: new Date(), data:
 scheduler.schedule(event)
 ```
 
-__Arguments__
-* event\<Object> - Event details
-* [callback] \Function> - callabck
+**Arguments**
+  * event \<Object> - Event details
+  * callback \<Function> - callabck
 
-__Event Fields__
-* name \<String> - Name of event that should be fired
-* [cron] \<String> - A cron string representing a frequency this should fire on
-* [collection] \<Object> - Info about the documents this event corresponds to
-* [id] \<ObjectId> - Value of the _id field of the document this event corresponds to
-* [after] \<Date> - Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls
-* [query] \<Object> - a MongoDB query expression to select records that this event should be triggered for
-* [data] \<Object|Primitive\> - Extra data to attach to the event
-
+**Event Fields**
+  * name \<String> - Name of event that should be fired.
+  * cron \<String> - A cron string representing a frequency this should fire on. _(optional)_
+  * collection \<Object> - Info about the documents this event corresponds to. _(optional)_
+  * id \<ObjectId> - Value of the _id field of the document this event corresponds to. _(optional)_
+  * after \<Date> - Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls. _(optional)_
+  * query \<Object> - a MongoDB query expression to select records that this event should be triggered for. _(optional)_
+  * data \<Object|Primitive\> - Extra data to attach to the event. _(optional)_
 
 ---------------------------------------
 
@@ -92,14 +90,14 @@ Event handler.
 
 ```javascript
 scheduler.on('breakfast', (meal, event) => {
-  console.log(event.data + " the " + meal.ingredients)
+  console.log(`${event.data} the ${meal.ingredients}`);
   // Assuming the document {ingredients: "Bacon and Eggs"} is in the meals collection
   // prints "Fry the Bacon and Eggs"
-})
+});
 ```
-__Arguments__
-* eventName \<String> - Name of event
-* handler \<Function> - handler
+**Arguments**
+  * eventName \<String> - Name of event.
+  * handler \<Function> - handler.
 
 ---------------------------------------
 
@@ -110,11 +108,11 @@ List all events.
 ```javascript
 scheduler.list((err, events) => {
   // Do something with events
-})
+});
 ```
 
-__Arguments__
-* handler \<Function> - handler
+**Arguments**
+  * handler \<Function> - handler.
 
 ---------------------------------------
 
@@ -125,12 +123,12 @@ Find an event by name.
 ```javascript
 scheduler.findByName('breakfast', (err, event) => {
   // Do something with event
-})
+});
 ```
 
-__Arguments__
-* eventName \<String> - Name of event
-* handler \<Function> - handler
+**Arguments**
+  * eventName \<String> - Name of event.
+  * handler \<Function> - handler.
 
 ---------------------------------------
 
@@ -139,18 +137,18 @@ __Arguments__
 Find an event by id in storage object and by name.
 
 ```javascript
-const event = { name: 'breakfast' id: '5a5dfd6c4879489ce958df0c', after: new Date() }
-scheduler.schedule(event)
+const event = { name: 'breakfast' id: '5a5dfd6c4879489ce958df0c', after: new Date() };
+scheduler.schedule(event);
 
 scheduler.findByStorageId('5a5dfd6c4879489ce958df0c', 'breakfast', (err, event) => {
   // Do something with event
-})
+});
 ```
 
-__Arguments__
-* storageID \<ObjectId> - Value of the _id field in storage object
-* eventName \<String> - Name of event
-* handler \<Function> - handler
+**Arguments**
+  * storageID \<ObjectId> - Value of the _id field in storage object.
+  * eventName \<String> - Name of event.
+  * handler \<Function> - handler.
 
 ---------------------------------------
 
@@ -161,14 +159,14 @@ Remove an event.
 ```javascript
 scheduler.remove('breakfast', null, null, (err, event) => {
   // Event has been removed
-})
+});
 ```
 
-__Arguments__
-* eventName \<String> - Name of event
-* [id] \<String> - Id of event
-* [after] \<String> - After of event (date)
-* handler \<Function> - handler
+**Arguments**
+  * eventName \<String> - Name of event.
+  * id \<String> - Id of event. _(optional)_
+  * after \<String> - After of event (date). _(optional)_
+  * handler \<Function> - handler.
 
 ---------------------------------------
 

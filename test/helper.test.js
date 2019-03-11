@@ -40,7 +40,7 @@ describe('schedule builder', function() {
     doc.conditions.should.eql({});
   });
 
-  describe("with queryfields", function() {
+  describe('with queryfields', function() {
     it('should translate the fields', function() {
       this.details.options = {
         queryFields: 'name collection id query after data'
@@ -90,15 +90,15 @@ describe('event builder', function() {
   });
 
   it('extends query with id from storage', function() {
-    this.doc.storage.id = "HI!!!";
+    this.doc.storage.id = 'HI!!!';
     var event = helper.buildEvent(this.doc);
-    event.conditions.query._id.should.eql("HI!!!");
+    event.conditions.query._id.should.eql('HI!!!');
   });
 
   it('returns additional data', function() {
-    this.doc.data = "OMG!";
+    this.doc.data = 'OMG!';
     var event = helper.buildEvent(this.doc);
-    event.data.should.eql("OMG!");
+    event.data.should.eql('OMG!');
   });
 });
 
@@ -130,4 +130,4 @@ describe('error builder', function() {
     var result = {lastErrorObject: { err: 'sad times' }};
     helper.buildError(null, result).message.should.equal('sad times');
   });
-})
+});

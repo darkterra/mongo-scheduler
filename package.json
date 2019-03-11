@@ -39,13 +39,14 @@
   },
   "license": "MIT",
   "engine": {
-    "node": ">= 4.0.0"
+    "node": ">= 6.0.0"
   },
   "author": "Jérémy Young <jeremy.young.pro@gmail.com>",
   "contributors": [
     "Jan Paul Erkelens (https://github.com/jperkelens)",
     "Matt Roman (https://github.com/romanmt)",
-    "Jérémy Young (http://darkterra.fr)"
+    "Jérémy Young (http://darkterra.fr)",
+    "Codacy Badger (http://www.codacy.com)"
   ],
   "jshintConfig": {
     "eqeqeq": true,
