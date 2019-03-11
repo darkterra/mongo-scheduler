@@ -44,19 +44,19 @@ const scheduler = new Scheduler(connection, options);
 ```
 
 **Arguments**
-  * **connection** \<String or Object> - mongodb connections string (i.e.: "mongodb://localhost:27017/scheduler-db") or a mongoose connection object.
-  * **options** \<Object> - Options object.
+* **connection** \<String or Object> - mongodb connections string (i.e.: "mongodb://localhost:27017/scheduler-db") or a mongoose connection object.
+* **options** \<Object> - Options object.
 
 **Valid Options Object**
-  * **dbname** \<String> - You can set (and overright) the name of DataBase to use _(optional if you precise the dbname in connection string)_.
-  * **pollInterval** \<Number> - Frequency in ms that the scheduler should poll the db. `Default: 60000 (1 minute)`
-  * **doNotFire** \<Bool> - If set to true, this instance will only schedule events, not fire them. `Default: false`
-  * useNewUrlParser \<Bool> - `Driver Option` - If set to false, the mongo driver use the old parser. `Default: true`
-  * loggerLevel \<String> - `Driver Option` - The logging level (error/warn/info/debug). _(optional)_
-  * logger \<Object> - `Driver Option` - Custom logger object. _(optional)_
-  * validateOptions \<Bool> - `Driver Option` - Validate MongoClient passed in options for correctness. `Default: false` _(only if you use the connection **string**)_
-  * auth \<Object> - `Driver Option` - { user: 'your_ddb_user', password: 'your_ddb_password'}. _(optional)_
-  * authMechanism \<String> - `Driver Option` - Mechanism for authentication: MDEFAULT, GSSAPI, PLAIN, MONGODB-X509, or SCRAM-SHA-1. _(optional)_
+* **dbname** \<String> - You can set (and overright) the name of DataBase to use _(optional if you precise the dbname in connection string)_.
+* **pollInterval** \<Number> - Frequency in ms that the scheduler should poll the db. `Default: 60000 (1 minute)`
+* **doNotFire** \<Bool> - If set to true, this instance will only schedule events, not fire them. `Default: false`
+* useNewUrlParser \<Bool> - `Driver Option` - If set to false, the mongo driver use the old parser. `Default: true`
+* loggerLevel \<String> - `Driver Option` - The logging level (error/warn/info/debug). _(optional)_
+* logger \<Object> - `Driver Option` - Custom logger object. _(optional)_
+* validateOptions \<Bool> - `Driver Option` - Validate MongoClient passed in options for correctness. `Default: false` _(only if you use the connection **string**)_
+* auth \<Object> - `Driver Option` - { user: 'your_ddb_user', password: 'your_ddb_password'}. _(optional)_
+* authMechanism \<String> - `Driver Option` - Mechanism for authentication: MDEFAULT, GSSAPI, PLAIN, MONGODB-X509, or SCRAM-SHA-1. _(optional)_
 
 ---------------------------------------
 
@@ -70,17 +70,17 @@ scheduler.schedule(event)
 ```
 
 **Arguments**
-  * event \<Object> - Event details
-  * callback \<Function> - callabck
+* event \<Object> - Event details
+* callback \<Function> - callabck
 
 **Event Fields**
-  * name \<String> - Name of event that should be fired.
-  * cron \<String> - A cron string representing a frequency this should fire on. _(optional)_
-  * collection \<Object> - Info about the documents this event corresponds to. _(optional)_
-  * id \<ObjectId> - Value of the _id field of the document this event corresponds to. _(optional)_
-  * after \<Date> - Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls. _(optional)_
-  * query \<Object> - a MongoDB query expression to select records that this event should be triggered for. _(optional)_
-  * data \<Object|Primitive\> - Extra data to attach to the event. _(optional)_
+* name \<String> - Name of event that should be fired.
+* cron \<String> - A cron string representing a frequency this should fire on. _(optional)_
+* collection \<Object> - Info about the documents this event corresponds to. _(optional)_
+* id \<ObjectId> - Value of the _id field of the document this event corresponds to. _(optional)_
+* after \<Date> - Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls. _(optional)_
+* query \<Object> - a MongoDB query expression to select records that this event should be triggered for. _(optional)_
+* data \<Object|Primitive\> - Extra data to attach to the event. _(optional)_
 
 ---------------------------------------
 
@@ -96,8 +96,8 @@ scheduler.on('breakfast', (meal, event) => {
 });
 ```
 **Arguments**
-  * eventName \<String> - Name of event.
-  * handler \<Function> - handler.
+* eventName \<String> - Name of event.
+* handler \<Function> - handler.
 
 ---------------------------------------
 
@@ -112,7 +112,7 @@ scheduler.list((err, events) => {
 ```
 
 **Arguments**
-  * handler \<Function> - handler.
+* handler \<Function> - handler.
 
 ---------------------------------------
 
@@ -127,8 +127,8 @@ scheduler.findByName('breakfast', (err, event) => {
 ```
 
 **Arguments**
-  * eventName \<String> - Name of event.
-  * handler \<Function> - handler.
+* eventName \<String> - Name of event.
+* handler \<Function> - handler.
 
 ---------------------------------------
 
@@ -146,9 +146,9 @@ scheduler.findByStorageId('5a5dfd6c4879489ce958df0c', 'breakfast', (err, event) 
 ```
 
 **Arguments**
-  * storageID \<ObjectId> - Value of the _id field in storage object.
-  * eventName \<String> - Name of event.
-  * handler \<Function> - handler.
+* storageID \<ObjectId> - Value of the _id field in storage object.
+* eventName \<String> - Name of event.
+* handler \<Function> - handler.
 
 ---------------------------------------
 
@@ -163,10 +163,10 @@ scheduler.remove('breakfast', null, null, (err, event) => {
 ```
 
 **Arguments**
-  * eventName \<String> - Name of event.
-  * id \<String> - Id of event. _(optional)_
-  * after \<String> - After of event (date). _(optional)_
-  * handler \<Function> - handler.
+* eventName \<String> - Name of event.
+* id \<String> - Id of event. _(optional)_
+* after \<String> - After of event (date). _(optional)_
+* handler \<Function> - handler.
 
 ---------------------------------------
 
