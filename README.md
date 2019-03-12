@@ -65,7 +65,7 @@ const scheduler = new Scheduler(connection, options);
 Schedules an event.
 
 ```javascript
-const event = { name: 'breakfast', collection: 'meals', after: new Date(), data: 'Fry' }
+const event = { name: 'abandonedShoppingCart', after: new Date(), data: 'Fry' }
 scheduler.schedule(event)
 ```
 
@@ -75,7 +75,7 @@ scheduler.schedule(event)
 
 **Event Fields**
 *   name \<String> - Name of event that should be fired.
-*   cron \<String> - A cron string representing a frequency this should fire on. _(optional)_
+*   cron \<String> - A cron string representing a frequency this should fire on **(Override 'after')**. _(optional)_
 *   collection \<Object> - Info about the documents this event corresponds to. _(optional)_
 *   id \<ObjectId> - Value of the \_id field of the document this event corresponds to. _(optional)_
 *   after \<Date> - Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls. _(optional)_
@@ -89,7 +89,7 @@ scheduler.schedule(event)
 Event handler.
 
 ```javascript
-scheduler.on('breakfast', (meal, event) => {
+scheduler.on('abandonedShoppingCart', (meal, event) => {
   console.log(`${event.data} the ${meal.ingredients}`);
   // Assuming the document {ingredients: "Bacon and Eggs"} is in the meals collection
   // prints "Fry the Bacon and Eggs"
@@ -121,7 +121,7 @@ scheduler.list((err, events) => {
 Find an event by name.
 
 ```javascript
-scheduler.findByName('breakfast', (err, event) => {
+scheduler.findByName('abandonedShoppingCart', (err, event) => {
   // Do something with event
 });
 ```
@@ -137,10 +137,10 @@ scheduler.findByName('breakfast', (err, event) => {
 Find an event by id in storage object and by name.
 
 ```javascript
-const event = { name: 'breakfast' id: '5a5dfd6c4879489ce958df0c', after: new Date() };
+const event = { name: 'abandonedShoppingCart' id: '5a5dfd6c4879489ce958df0c', after: new Date() };
 scheduler.schedule(event);
 
-scheduler.findByStorageId('5a5dfd6c4879489ce958df0c', 'breakfast', (err, event) => {
+scheduler.findByStorageId('5a5dfd6c4879489ce958df0c', 'abandonedShoppingCart', (err, event) => {
   // Do something with event
 });
 ```
@@ -157,7 +157,7 @@ scheduler.findByStorageId('5a5dfd6c4879489ce958df0c', 'breakfast', (err, event) 
 Remove an event.
 
 ```javascript
-scheduler.remove('breakfast', null, null, (err, event) => {
+scheduler.remove('abandonedShoppingCart', null, null, (err, event) => {
   // Event has been removed
 });
 ```
