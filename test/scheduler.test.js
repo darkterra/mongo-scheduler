@@ -79,8 +79,9 @@ describe('schedule', () => {
         if (err) {
           console.error(err);
         }
+
         expect(docs.length).to.be.equal(1);
-        expect(docs[0].event).to.be.equal('new-event');
+        expect(docs[0].name).to.be.equal('new-event');
         done();
       });
     };
@@ -93,13 +94,13 @@ describe('schedule', () => {
       if (newerr) {
         console.error('newerr: ', newerr);
       }
-      events.find({event: 'new-event'}).toArray((err, docs) => {
+      events.find({name: 'new-event'}).toArray((err, docs) => {
         if (err) {
           console.error(err);
         }
         
         expect(docs.length).to.be.equal(1);
-        expect(docs[0].event).to.be.equal('new-event');
+        expect(docs[0].name).to.be.equal('new-event');
         expect(docs[0].data).to.be.equal(100);
         done();
       });
@@ -128,7 +129,7 @@ describe('emitter', () => {
     
     scheduler.on('error', (err, event) => {
       expect(err.message).to.be.equal('Cannot find');
-      expect(event).to.be.equal({event: 'awesome', storage: {collection: 'records'}});
+      expect(event).to.be.equal({name: 'awesome', storage: {collection: 'records'}});
       
       if(running) {
         // records.find.restore();
@@ -138,15 +139,17 @@ describe('emitter', () => {
       running = false;
     });
     
-    records.insert({message: 'This is a record'}, () => {
+    records.insertOne({ message: 'This is a record' }, (err, data) => {
+      console.log('record.insert: err: ', err)
+      console.log('record.insert: data: ', data)
       scheduler.schedule(details);
     });
   });
 
   it('should emit an event with matching records', done => {
     let running = true;
-    scheduler.on('awesome', (doc) => {
-      expect(doc[0].message).to.be.equal('This is a record');
+    scheduler.on('awesome', (event, docs) => {
+      expect(docs[0].message).to.be.equal('This is a record');
       
       if(running) {
         done();
@@ -155,14 +158,16 @@ describe('emitter', () => {
       running = false;
     });
 
-    records.insert({message: 'This is a record'}, () => {
+    records.insertOne({ message: 'This is a record' }, err => {
+      console.error(err);
+      
       scheduler.schedule(details);
     });
   });
 
   it('emits an event with multiple records', done => {
     var running = true;
-    scheduler.on('awesome', docs => {
+    scheduler.on('awesome', (event, docs) => {
       docs.length.should.eql(2);
       if(running) done();
       running = false;
@@ -182,9 +187,9 @@ describe('emitter', () => {
     var additionalDetails = _.extend({data: 'MyData'}, details);
 
     var running = true;
-    scheduler.on('awesome', (doc, event) => {
-      event.event.should.eql('awesome');
-      event.storage.should.eql({collection: 'records'});
+    scheduler.on('awesome', (event, doc) => {
+      event.name.should.eql('awesome');
+      event.storage.should.eql({ collection: 'records', query: null, id: null });
       event.data.should.eql('MyData');
 
       if(running) done();
@@ -199,7 +204,7 @@ describe('emitter', () => {
 
   it('deletes executed events', done => {
     const expectation = () => {
-      events.find({event: 'awesome'}).toArray((err, docs) => {
+      events.find({name: 'awesome'}).toArray((err, docs) => {
         if (err) {
           console.error(err);
         }
@@ -218,10 +223,10 @@ describe('emitter', () => {
   });
 
   it('emits an empty event', done => {
-    scheduler.on('empty', (doc, event) => {
+    scheduler.on('empty', (event, doc) => {
       expect(doc).to.be.a('null', 'Doc should be null');
       expect(event.data).to.be.a('null', 'data should be null');
-      expect(event.event).to.be.equal('empty');
+      expect(event.name).to.be.equal('empty');
       done();
     });
 
@@ -235,7 +240,7 @@ describe('emitter', () => {
 
     it('should emit an event per doc', done => {
       var running = true;
-      scheduler.on('awesome', doc => {
+      scheduler.on('awesome', (event, doc) => {
         doc.message.should.eql('This is a record');
         if(running) {
           done();
@@ -257,7 +262,7 @@ describe('emitter', () => {
 
     it('should emit an event with matching records', done => {
       var running = true;
-      scheduler.on('awesome', docs => {
+      scheduler.on('awesome', (event, docs) => {
         docs[0].message.should.eql('This is a record');
         if(running) {
           done();
@@ -273,7 +278,7 @@ describe('emitter', () => {
 
     it('emits an event with multiple records', done => {
       var running = true;
-      scheduler.on('awesome', docs => {
+      scheduler.on('awesome', (event, docs) => {
         docs.length.should.eql(2);
         if(running) {
           done();
@@ -290,11 +295,11 @@ describe('emitter', () => {
     });
   });
 
-  describe.skip('with cron string', () => {
-    it('updates the after condition', (done) => {
+  describe('with cron string', () => {
+    it.skip('updates the after condition', (done) => {
       var expectedDate = moment().hours(23).startOf('hour').toDate();
       var expectation = () => {
-        events.find({event: 'empty'}).toArray((err, docs) => {
+        events.find({name: 'empty'}).toArray((err, docs) => {
           if (err) {
             console.error(err);
           }

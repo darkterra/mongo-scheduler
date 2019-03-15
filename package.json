@@ -7,8 +7,15 @@
     "jobs",
     "scheduler",
     "schedule",
+    "scheduling",
     "event",
     "mongo",
+    "mongodb",
+    "database",
+    "delayed",
+    "task",
+    "tasks",
+    "recurring",
     "cron",
     "more"
   ],
@@ -17,7 +24,7 @@
     "url": "git://github.com/darkterra/mongo-scheduler.git"
   },
   "dependencies": {
-    "cron-parser": "^2.8.0",
+    "cron-parser": "^2.9.0",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "mongodb": "^3.1.13"
@@ -33,9 +40,9 @@
     "sinon": "^7.2.7"
   },
   "scripts": {
-    "test": "projectz compile; mocha -R nyan test/ --exit",
-    "test:coverage": "projectz compile; nyc --reporter=lcov mocha -R nyan test/ --exit",
-    "test:all": "npm run test:coverage; cat ./coverage/lcov.info | codacy-coverage && rm -rf ./coverage"
+    "test": "projectz compile; mocha test/ --exit",
+    "test:coverage": "projectz compile; nyc --reporter=lcov mocha -R nyan --forbid-only test/ --exit",
+    "test:all": "npm run test:coverage; cat ./coverage/lcov.info | codacy-coverage"
   },
   "license": "MIT",
   "engine": {
@@ -46,7 +53,8 @@
     "Jan Paul Erkelens (https://github.com/jperkelens)",
     "Matt Roman (https://github.com/romanmt)",
     "Jérémy Young (http://darkterra.fr)",
-    "Codacy Badger (http://www.codacy.com)"
+    "Codacy Badger (http://www.codacy.com)",
+    "Alexander Hörl (h2ecommerce.de)"
   ],
   "jshintConfig": {
     "eqeqeq": true,

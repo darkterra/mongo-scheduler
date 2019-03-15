@@ -14,10 +14,11 @@
 	},
 	"badges": {
 		"list": [
+		  ["badge", {"image": "https://circleci.com/gh/darkterra/mongo-scheduler.svg?style=svg", "alt": "CircleCI Badge", "url": "https://circleci.com/gh/darkterra/mongo-scheduler", "title": "CircleCI Badge"}],
 			"npmversion",
 			"npmdownloads",
 		  "---",
-		  ["badge", {"image": "https://circleci.com/gh/darkterra/mongo-scheduler.svg?style=svg", "alt": "CircleCI Badge", "url": "https://circleci.com/gh/darkterra/mongo-scheduler", "title": "CircleCI Badge"}],
+		  ["badge", {"image": "https://david-dm.org/darkterra/mongo-scheduler/status.svg", "alt": "Dependencies Badge", "url": "https://david-dm.org/darkterra/mongo-scheduler", "title": "CircleCI Badge"}],
 		  ["badge", {"image": "https://api.codacy.com/project/badge/Grade/51fe243879a94a11807318338aac7d8e", "alt": "Codacy Badge", "url": "https://app.codacy.com/app/darkterra/mongo-scheduler?utm_source=github.com&utm_medium=referral&utm_content=darkterra/mongo-scheduler&utm_campaign=Badge_Grade_Settings", "title": "Codacy Badge"}],
 		  ["badge", {"image": "https://api.codacy.com/project/badge/Coverage/22f5c7a46aba46ee822ef36b910c2d06", "alt": "Codacy Badge", "url": "https://www.codacy.com/app/darkterra/mongo-scheduler?utm_source=github.com&utm_medium=referral&utm_content=darkterra/mongo-scheduler&utm_campaign=Badge_Coverage", "title": "Codacy Badge"}],
 		  "---",

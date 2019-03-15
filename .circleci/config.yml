@@ -32,8 +32,8 @@ jobs:
           name: install dependencies
           command: 'npm i; sudo npm i -g projectz badges'
       - run:
-          name: Tests (mocha)
-          command: 'npm test'
+          name: Tests (mocha + coverage)
+          command: 'npm run test:all'
 
 workflows:
   version: 2
