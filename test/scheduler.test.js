@@ -3,8 +3,6 @@
 require('mocha');
 require('should');
 
-const mlog = require('mocha-logger');
-
 const sinon      = require('sinon');
 const { expect } = require('chai');
 const mongo      = require('mongodb');
@@ -47,7 +45,7 @@ before(done => {
 afterEach(done => {
   scheduler.removeAllListeners();
 
-  const cleanRecords = () =>  {
+  const cleanRecords = () => {
     records.deleteMany({}, done);
   };
 
@@ -114,18 +112,6 @@ describe('schedule', () => {
       scheduleDetails.data = 100;
       scheduler.schedule(scheduleDetails, expectation);
     });
-  });
-
-  it('should return an error', done => {
-    const expectation = (newerr, newresult) =>  {
-      if (newerr) {
-        console.error('newerr: ', newerr);
-      }
-      expect(newerr).to.be.equal('/!\\ Missing property "name"');
-      done();
-    };
-
-    scheduler.schedule({}, expectation);
   });
 });
 
