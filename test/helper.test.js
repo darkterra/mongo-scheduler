@@ -1,6 +1,8 @@
-var _ = require('lodash'),
-    moment = require('moment'),
-    helper = require('../lib/helper');
+const _      = require('lodash');
+const moment = require('moment');
+const helper = require('../lib/helper');
+
+const mlog = require('mocha-logger');
 
 describe('schedule builder', function() {
   beforeEach(function() {
@@ -15,7 +17,8 @@ describe('schedule builder', function() {
   });
 
   it('should return doc to insert', function() {
-    var doc = helper.buildSchedule(this.details).doc;
+    const doc = helper.buildSchedule(this.details).doc;
+    
     doc.should.have.properties({
       name: 'name',
       status: 'ready',

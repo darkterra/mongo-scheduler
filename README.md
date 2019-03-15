@@ -15,6 +15,21 @@ mongo-scheduler-more
 
 <!-- /BADGES -->
 
+**/!\\ The version 2.x.x has undergone a big upgrade /!\\**
+
+*   **Several methods have changed signatures! Migration version 1.x.x -> 2.x.x: modify parameters of your calls to mongo-scheduler-more.**
+*   New methods.
+*   Updated deprecated methods of the mongodb driver.
+*   Faster
+*   More robust
+*   A brand new documentation _(below)_
+
+If you encounter problems, do not hesitate to create an issue _(and / or pull requests)_ on the project github.
+If you like mongo-scheduler-more, do not hesitate to leave a star on the project github :)
+
+---------------------------------------
+
+# Description
 
 Persistent event scheduler using mongodb as storage.
 

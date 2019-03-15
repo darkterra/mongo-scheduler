@@ -3,6 +3,8 @@
 require('mocha');
 require('should');
 
+const mlog = require('mocha-logger');
+
 const sinon      = require('sinon');
 const { expect } = require('chai');
 const mongo      = require('mongodb');
@@ -78,7 +80,7 @@ describe('schedule', () => {
         if (err) {
           console.error(err);
         }
-
+        
         expect(docs.length).to.be.equal(1);
         expect(docs[0].name).to.be.equal('new-event');
         done();
@@ -170,8 +172,6 @@ describe('emitter', () => {
     });
 
     records.insertOne({ message: 'This is a record' }, err => {
-      console.error(err);
-      
       scheduler.schedule(details);
     });
   });
