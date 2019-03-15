@@ -129,7 +129,7 @@ describe('emitter', () => {
     
     scheduler.on('error', (err, event) => {
       expect(err.message).to.be.equal('Cannot find');
-      expect(event).to.be.equal({name: 'awesome', storage: {collection: 'records'}});
+      expect(event).to.be.equal({ name: 'awesome', storage: { collection: 'records' }});
       
       if(running) {
         // records.find.restore();
@@ -141,7 +141,7 @@ describe('emitter', () => {
     
     records.insertOne({ message: 'This is a record' }, (err, data) => {
       console.log('record.insert: err: ', err)
-      console.log('record.insert: data: ', data)
+      // console.log('record.insert: data: ', data)
       scheduler.schedule(details);
     });
   });
@@ -192,7 +192,10 @@ describe('emitter', () => {
       event.storage.should.eql({ collection: 'records', query: null, id: null });
       event.data.should.eql('MyData');
 
-      if(running) done();
+      if(running) {
+        done();
+      }
+      
       running = false;
     });
 
