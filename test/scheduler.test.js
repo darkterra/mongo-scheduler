@@ -114,6 +114,18 @@ describe('schedule', () => {
       scheduler.schedule(scheduleDetails, expectation);
     });
   });
+
+  it('should return an error', done => {
+    const expectation = (newerr, newresult) =>  {
+      if (newerr) {
+        console.error('newerr: ', newerr);
+      }
+      expect(newerr).to.be.equal('/!\\ Missing property "name"');
+      done();
+    };
+
+    scheduler.schedule({}, expectation);
+  });
 });
 
 describe('emitter', () => {
@@ -169,7 +181,11 @@ describe('emitter', () => {
     var running = true;
     scheduler.on('awesome', (event, docs) => {
       docs.length.should.eql(2);
-      if(running) done();
+      
+      if(running) {
+        done();
+      }
+      
       running = false;
     });
 

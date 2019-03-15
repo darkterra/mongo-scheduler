@@ -95,9 +95,9 @@ You can also use the same event name multiple times, as long as the `id` and / o
 | name | String | Name of event that should be fired. | **false** |
 | after | Date | Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls. | true |
 | id | ObjectId or String | \_id field of the document this event corresponds to. | true |
-| cron | String | **(Override 'after')**. A cron string representing a frequency this should fire on. Ex: `cron: '0 0 23 * * *'`, see: https://www.npmjs.com/package/cron-parser. | true |
+| cron | String | **(Override 'after')**. A cron string representing a frequency this should fire on. Ex: `cron: '0 0 23 * * *'`, see: <https://www.npmjs.com/package/cron-parser>. | true |
 | collection | Object | Name of the collection to use for the **query** parameter _(just below)_. | true |
-| query | Object | A MongoDB query expression to select document that this event should be triggered _(only if the `collection` property is set)_ for. Ex: `{ payement: true }`, see: https://docs.mongodb.com/manual/core/document/#document-query-filter. | true |
+| query | Object | A MongoDB query expression to select document that this event should be triggered _(only if the `collection` property is set)_ for. Ex: `{ payement: true }`, see: <https://docs.mongodb.com/manual/core/document/#document-query-filter>. | true |
 | data | Object or Primitive | Extra data to attach to the event. | true |
 
 *   **callback \<Function>**
