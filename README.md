@@ -287,13 +287,14 @@ scheduler.findByStorageId(params, (err, event) => {
 
 ## scheduler.remove
 
-_`remove` method allows to remove event :_
+_`remove` method allows to remove events :_
 
 ```javascript
 const params = { name: 'abandonedShoppingCart' };
 scheduler.remove(params, (err, event) => {
   // Event has been removed
 });
+// Remove every events find with the name = 'abandonedShoppingCart'
 ```
 
 ### Arguments
@@ -304,7 +305,36 @@ scheduler.remove(params, (err, event) => {
 | :- | :- | :- | :-: |
 | name | String | Name of listened event | **false** |
 | id | ObjectId or String | The id searched _(remember, this id is not the event itself id)_  | true |
-| after | Date | Name of listened event | true |
+| after | Date | Remove only the events who have the exacte same date | true |
+
+*   **callback \<Function>**
+
+| Name | Type | Description | Optional |
+| :- | :- | :- | :-: |
+| event | Object | This is the original event stored into MongoDB when you use the `scheduler.schedule()` function | true |
+| result | Object or Array | If you use the properties `collection` and `query`, you get the result here | true |
+
+---------------------------------------
+
+## scheduler.purge
+
+_`purge` method allows to remove ALL events :_
+
+```javascript
+const params = { force: true };
+scheduler.purge(params, (err, event) => {
+  // Event has been removed
+});
+// Remove every events
+```
+
+### Arguments
+
+*   **params \<Object>**
+
+| Name | Type | Description | Optional |
+| :- | :- | :- | :-: |
+| force | Bool | It's a simple crazy guard, just not to delete all the events stored inadvertently | **false |
 
 *   **callback \<Function>**
 

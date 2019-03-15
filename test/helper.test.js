@@ -68,7 +68,7 @@ describe('schedule builder', function() {
 
   describe('with cron property', function() {
     beforeEach(function() {
-      this.cronDetails = _.extend({cron: '0 0 23 * * *'}, this.details);
+      this.cronDetails = { cron: '0 0 23 * * *', ...this.details };
     });
 
     it('should include cron string in doc', function() {

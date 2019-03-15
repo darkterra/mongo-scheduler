@@ -3,7 +3,6 @@
 require('mocha');
 require('should');
 
-const _          = require('lodash');
 const sinon      = require('sinon');
 const { expect } = require('chai');
 const mongo      = require('mongodb');
@@ -46,18 +45,18 @@ before(done => {
 afterEach(done => {
   scheduler.removeAllListeners();
 
-  var cleanRecords = () =>  {
-    records.remove({}, done);
+  const cleanRecords = () =>  {
+    records.deleteMany({}, done);
   };
 
-  events.remove({}, () => {
+  events.deleteMany({}, () => {
     setTimeout(cleanRecords, 100);
   });
 });
 
 after((done) => {
-  events.remove({}, () => {
-    records.remove({}, () => {
+  events.deleteMany({}, () => {
+    records.deleteMany({}, () => {
       // db.close();
       done();
     });
@@ -146,8 +145,8 @@ describe('emitter', () => {
       if(running) {
         // records.find.restore();
         done();
-        
       }
+      
       running = false;
     });
     
@@ -178,7 +177,8 @@ describe('emitter', () => {
   });
 
   it('emits an event with multiple records', done => {
-    var running = true;
+    let running = true;
+    
     scheduler.on('awesome', (event, docs) => {
       docs.length.should.eql(2);
       
@@ -189,9 +189,9 @@ describe('emitter', () => {
       running = false;
     });
 
-    records.insert([
-      {message: 'This is a record'},
-      {message: 'Another Record'}
+    records.insertMany([
+      { message: 'This is a record' },
+      { message: 'Another Record' }
     ], () => {
       scheduler.schedule(details);
     });
@@ -200,9 +200,10 @@ describe('emitter', () => {
   });
 
   it('emits the original event', done => {
-    var additionalDetails = _.extend({data: 'MyData'}, details);
+    const additionalDetails = { data: 'MyData', ...details };
 
-    var running = true;
+    let running = true;
+    
     scheduler.on('awesome', (event, doc) => {
       event.name.should.eql('awesome');
       event.storage.should.eql({ collection: 'records', query: null, id: null });
@@ -216,7 +217,7 @@ describe('emitter', () => {
     });
 
 
-    records.insert({message: 'This is a record'}, () => {
+    records.insertOne({message: 'This is a record'}, () => {
       scheduler.schedule(additionalDetails);
     });
   });
@@ -236,7 +237,7 @@ describe('emitter', () => {
       setTimeout(expectation, 1050);
     });
 
-    records.insert({message: 'This is a record'}, () => {
+    records.insertOne({message: 'This is a record'}, () => {
       scheduler.schedule(details);
     });
   });
@@ -253,23 +254,25 @@ describe('emitter', () => {
   });
 
   describe('with emitPerDoc', () => {
-    var additionalDetails = _.extend({
-      options: {emitPerDoc: true}
-    }, details);
-
+    const additionalDetails = { options: { emitPerDoc: true }, ...details };
+    
+    
     it('should emit an event per doc', done => {
-      var running = true;
+      let running = true;
+      
       scheduler.on('awesome', (event, doc) => {
         doc.message.should.eql('This is a record');
+        
         if(running) {
           done();
         }
         
         running = false;
       });
-      records.insert([
-        {message: 'This is a record'},
-        {message: 'This is a record'}
+      
+      records.insertMany([
+        { message: 'This is a record' },
+        { message: 'This is a record' }
       ], () => {
         scheduler.schedule(additionalDetails);
       });
@@ -277,10 +280,11 @@ describe('emitter', () => {
   });
 
   describe('with a query', () => {
-    var additionalDetails = _.extend({query: {}}, details);
+    const additionalDetails = { query: {}, ...details };
 
     it('should emit an event with matching records', done => {
-      var running = true;
+      let running = true;
+      
       scheduler.on('awesome', (event, docs) => {
         docs[0].message.should.eql('This is a record');
         if(running) {
@@ -290,13 +294,13 @@ describe('emitter', () => {
         running = false;
       });
 
-      records.insert({message: 'This is a record'}, () => {
+      records.insertOne({message: 'This is a record'}, () => {
         scheduler.schedule(additionalDetails);
       });
     });
 
     it('emits an event with multiple records', done => {
-      var running = true;
+      let running = true;
       scheduler.on('awesome', (event, docs) => {
         docs.length.should.eql(2);
         if(running) {
@@ -305,9 +309,9 @@ describe('emitter', () => {
         running = false;
       });
 
-      records.insert([
-        {message: 'This is a record'},
-        {message: 'Another Record'}
+      records.insertMany([
+        { message: 'This is a record' },
+        { message: 'Another Record' }
       ], () => {
         scheduler.schedule(additionalDetails);
       });
@@ -316,14 +320,14 @@ describe('emitter', () => {
 
   describe('with cron string', () => {
     it.skip('updates the after condition', (done) => {
-      var expectedDate = moment().hours(23).startOf('hour').toDate();
-      var expectation = () => {
+      const expectedDate = moment().hours(23).startOf('hour').toDate();
+      const expectation = () => {
         events.find({name: 'empty'}).toArray((err, docs) => {
           if (err) {
             console.error(err);
           }
           docs.length.should.eql(1);
-          var saniDate = moment(docs[0].conditions.after).startOf('second');
+          const saniDate = moment(docs[0].conditions.after).startOf('second');
 
           docs[0].status.should.eql('ready');
           saniDate.toDate.should.eql(expectedDate);
@@ -335,7 +339,7 @@ describe('emitter', () => {
         setTimeout(expectation, 50);
       });
 
-      events.insert({
+      events.insertOne({
         name: 'empty',
         storage: {},
         conditions: { after: new Date() },
