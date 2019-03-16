@@ -1,4 +1,3 @@
-const _          = require('lodash');
 const moment     = require('moment');
 const { expect } = require('chai');
 const helper     = require('../lib/helper');
@@ -60,29 +59,6 @@ describe('schedule builder', () => {
     });
   });
 
-// Remove this test ?
-  describe.skip('with queryfields', () => {
-    it('should translate the fields', () => {
-      const eventWithOptions = { ...defaultEvent, options: { queryFields: 'name collection id query after data' }};
-      const { query } = helper.buildSchedule(eventWithOptions);
-      
-      _.keys(query).should.eql(['event', 'storage.collection',
-        'storage.id', 'storage.query', 'conditions.after', 'data']);
-    });
-
-    it('should pick the query fields from the doc', () => {
-      const eventWithOptions = { ...defaultEvent, options: { queryFields: 'name collection id query after data' }};
-      const { query } = helper.buildSchedule(eventWithOptions);
-      
-      query.should.eql({
-        name: 'name',
-        'storage.collection' : 'collection',
-        'storage.query': 'query',
-        'data': {my: 'data'}
-      });
-    });
-  });
-
   describe('with cron property', () => {
     const cronDetails = { ...defaultEvent, cron: '0 0 23 * * *' };
 
@@ -94,8 +70,13 @@ describe('schedule builder', () => {
 
     it('should calculate next tick', () => {
       const { doc }       = helper.buildSchedule(cronDetails);
-      const nextTick      = moment().hours(23).startOf('hour').toDate();
       const sanitizedDate = moment(doc.conditions.after).startOf('second');
+      
+      let nextTick = moment().hours(23).startOf('hour').toDate();
+      
+      if (moment(nextTick).isBefore(moment().toDate())) {
+        nextTick = moment().add(1, 'd').hours(23).startOf('hour').toDate();
+      }
       
       sanitizedDate.toDate().should.eql(nextTick);
     });
@@ -107,7 +88,6 @@ describe('event builder', () => {
 
   it('extends query with id from storage', () => {
     const doc = { ...defaultEvent, storage: { id: 'HI!!!' }};
-    console.log('doc ', doc);
     
     const event = helper.buildEvent(doc);
     event.conditions.query._id.should.eql('HI!!!');
@@ -115,7 +95,6 @@ describe('event builder', () => {
 
   it('returns additional data', () => {
     const doc = { ...defaultEvent, data: 'OMG!' };
-    console.log('doc ', doc);
 
     const event = helper.buildEvent(doc);
     event.data.should.eql('OMG!');
@@ -147,7 +126,7 @@ describe('error builder', () => {
   });
 
   it('should wrap err string in error', () => {
-    const result = {lastErrorObject: { err: 'sad times' }};
+    const result = { lastErrorObject: { err: 'sad times' }};
     helper.buildError(null, result).message.should.equal('sad times');
   });
 });

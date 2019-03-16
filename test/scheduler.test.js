@@ -68,7 +68,7 @@ describe('schedule', () => {
     name: 'new-event',
     collection: 'records'
   };
-    
+  
   it('should create an event', done => {
     const expectation = (olderr, oldresult) => {
       if (olderr) {
@@ -120,7 +120,7 @@ describe('emitter', () => {
     name: 'awesome',
     collection: 'records'
   };
-
+  
   it.skip('should emit an error', (done) => {
     let running = true;
    
@@ -138,13 +138,11 @@ describe('emitter', () => {
       running = false;
     });
     
-    records.insertOne({ message: 'This is a record' }, (err, data) => {
-      console.log('record.insert: err: ', err)
-      // console.log('record.insert: data: ', data)
+    records.insertOne({ message: 'This is a record' }, () => {
       scheduler.schedule(details);
     });
   });
-
+  
   it('should emit an event with matching records', done => {
     let running = true;
     scheduler.on('awesome', (event, docs) => {
@@ -156,12 +154,12 @@ describe('emitter', () => {
       
       running = false;
     });
-
-    records.insertOne({ message: 'This is a record' }, err => {
+    
+    records.insertOne({ message: 'This is a record' }, () => {
       scheduler.schedule(details);
     });
   });
-
+  
   it('emits an event with multiple records', done => {
     let running = true;
     
@@ -174,35 +172,34 @@ describe('emitter', () => {
       
       running = false;
     });
-
+    
     records.insertMany([
       { message: 'This is a record' },
       { message: 'Another Record' }
     ], () => {
       scheduler.schedule(details);
     });
-
+    
     done();
   });
 
   it('emits the original event', done => {
     const additionalDetails = { data: 'MyData', ...details };
-
+    
     let running = true;
     
     scheduler.on('awesome', (event, doc) => {
       event.name.should.eql('awesome');
       event.storage.should.eql({ collection: 'records', query: null, id: null });
       event.data.should.eql('MyData');
-
+      
       if(running) {
         done();
       }
       
       running = false;
     });
-
-
+    
     records.insertOne({message: 'This is a record'}, () => {
       scheduler.schedule(additionalDetails);
     });
@@ -279,12 +276,12 @@ describe('emitter', () => {
         
         running = false;
       });
-
+      
       records.insertOne({message: 'This is a record'}, () => {
         scheduler.schedule(additionalDetails);
       });
     });
-
+    
     it('emits an event with multiple records', done => {
       let running = true;
       scheduler.on('awesome', (event, docs) => {
@@ -305,32 +302,39 @@ describe('emitter', () => {
   });
 
   describe('with cron string', () => {
-    it.skip('updates the after condition', (done) => {
-      const expectedDate = moment().hours(23).startOf('hour').toDate();
-      const expectation = () => {
-        events.find({name: 'empty'}).toArray((err, docs) => {
-          if (err) {
-            console.error(err);
-          }
-          docs.length.should.eql(1);
-          const saniDate = moment(docs[0].conditions.after).startOf('second');
-
-          docs[0].status.should.eql('ready');
-          saniDate.toDate.should.eql(expectedDate);
-          done();
-        });
+    it('updates the after condition', (done) => {
+      let expectedDate = moment().hours(23).startOf('hour').toDate();
+      
+      if (moment(expectedDate).isBefore(moment().toDate())) {
+        expectedDate = moment().add(1, 'd').hours(23).startOf('hour').toDate();
+      }
+      
+      const expectation = (doc) => {
+        const saniDate = moment(doc.conditions.after).startOf('hour');
+        
+        doc.status.should.eql('ready');
+        saniDate.toDate().should.eql(expectedDate);
+        done();
       };
-
-      scheduler.on('empty', () => {
-        setTimeout(expectation, 50);
-      });
-
-      events.insertOne({
+      
+      scheduler.schedule({
         name: 'empty',
         storage: {},
         conditions: { after: new Date() },
-        cron: '0 23 * * *'
+        cron: '0 0 23 * * *'
       });
+      
+      
+      setTimeout(() => {
+        scheduler.findByName('empty', (err, doc) => {
+          if (err) {
+            console.error(err);
+          }
+          
+          expectation(doc);
+        });
+      },
+      50);
     });
   });
 });

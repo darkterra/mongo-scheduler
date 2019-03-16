@@ -1,9 +1,11 @@
-version: 2
+version: 2.1
 jobs:
   checkout_code:
     docker:
-      - image: circleci/node:7.10.0
-      - image: mongo:3.4.4
+      # - image: circleci/node:7.10.0
+      - image: node:11.11.0-stretch
+      # - image: mongo:3.4.4
+      - image: mongo:4.1.9
     working_directory: ~/circleci-mongo-scheduler
     steps:
       - checkout
@@ -17,8 +19,8 @@ jobs:
         
   test:
     docker:
-      - image: circleci/node:7.10.0
-      - image: mongo:3.4.4
+      - image: node:11.11.0-stretch
+      - image: mongo:4.1.9
     working_directory: ~/circleci-mongo-scheduler
     steps:
       - run:
