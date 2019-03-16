@@ -84,13 +84,14 @@ describe('schedule builder', () => {
 });
 
 describe('event builder', () => {
-  const defaultEvent = { conditions: {}, storage: {} };
+  const defaultEvent = { name: 'builder-event', storage: {} };
 
   it('extends query with id from storage', () => {
     const doc = { ...defaultEvent, storage: { id: 'HI!!!' }};
     
     const event = helper.buildEvent(doc);
-    event.conditions.query._id.should.eql('HI!!!');
+    
+    event.storage.query.id.should.eql('HI!!!');
   });
 
   it('returns additional data', () => {
