@@ -32,7 +32,7 @@ jobs:
           key: v1-dependency-cache-{{ checksum "package.json" }}
       - run:
           name: install dependencies
-          command: 'npm i; sudo npm i -g projectz badges'
+          command: 'npm i; npm i -g projectz badges'
       - run:
           name: Tests (mocha + coverage)
           command: 'npm run test:all'
