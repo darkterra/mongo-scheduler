@@ -3,10 +3,13 @@
 require('mocha');
 require('should');
 
-const sinon      = require('sinon');
-const { expect } = require('chai');
-const mongo      = require('mongodb');
-const moment     = require('moment');
+const sinon            = require('sinon');
+const { expect }       = require('chai');
+const mongo            = require('mongodb');
+const moment           = require('moment');
+const { readFileSync } = require('fs');
+const { join }         = require('path');
+
 const Scheduler  = require('../index.js');
 const connection = 'mongodb://localhost:27017/mongo-scheduler-more';
 
@@ -70,7 +73,7 @@ describe('schedule', () => {
   };
   
   it('should create an event', done => {
-    const expectation = (olderr, oldresult) => {
+    const expectation = (olderr, oldResult) => {
       if (olderr) {
         console.error('olderr: ', olderr);
       }
@@ -326,7 +329,7 @@ describe('emitter', () => {
       
       
       setTimeout(() => {
-        scheduler.findByName('empty', (err, doc) => {
+        scheduler.findByName({ name: 'empty' }, (err, doc) => {
           if (err) {
             console.error(err);
           }
@@ -336,5 +339,207 @@ describe('emitter', () => {
       },
       50);
     });
+  });
+});
+
+
+describe('bulk', () => {
+  const bulkSchedule = [
+    {
+      name: 'event-to-purge',
+      after: moment().add(15, 'm').toDate()
+    },
+    {
+      name: 'event-to-purge',
+      after: moment().add(25, 'm').toDate()
+    },
+    {
+      name: 'event-to-purge',
+      after: moment().add(8, 'm').toDate()
+    },
+    {
+      name: 'event-to-purge',
+      after: moment().add(66, 'm').toDate()
+    },
+    {
+      name: 'event-to-purge',
+      after: moment().add(5000, 'm').toDate()
+    },
+    {
+      name: 'event-to-purge',
+      data: 'this is hacked scheduler !!!',
+      after: moment().add(5000, 'm').toDate()
+    }
+  ];
+  
+  it('should schedule all events at once request to mongo', done => {
+    const expectation = (olderr, oldResult) => {
+      if (olderr) {
+        console.error('olderr: ', olderr);
+      }
+      
+      events.find().toArray((err, docs) => {
+        if (err) {
+          console.error(err);
+        }
+        
+        expect(docs.length).to.be.equal(5);
+        expect(oldResult.result.nUpserted).to.be.equal(5);
+        expect(oldResult.result.nMatched).to.be.equal(1);
+        expect(oldResult.result.nModified).to.be.equal(1);
+        done();
+      });
+    };
+    
+    scheduler.scheduleBulk(bulkSchedule, expectation);
+  });
+});
+
+describe('purge', () => {
+  const scheduleForPurge = [
+    {
+      name: 'event-to-purge',
+      after: moment().add(15, 'm').toDate()
+    },
+    {
+      name: 'event-to-purge',
+      after: moment().add(25, 'm').toDate()
+    },
+    {
+      name: 'event-to-purge',
+      after: moment().add(8, 'm').toDate()
+    },
+    {
+      name: 'event-to-purge',
+      after: moment().add(66, 'm').toDate()
+    },
+    {
+      name: 'event-to-purge',
+      after: moment().add(5000, 'm').toDate()
+    }
+  ];
+  
+  it('should purge all events', done => {
+    const expectation = (olderr, oldResult) => {
+      if (olderr) {
+        console.error('olderr: ', olderr);
+      }
+      
+      scheduler.purge({ force: true }, (err, result) => {
+        if (err) {
+          console.error('err: ', err);
+        }
+        
+        events.find().toArray((err, docs) => {
+          if (err) {
+            console.error(err);
+          }
+          
+          expect(docs.length).to.be.equal(0);
+          expect(result.deletedCount).to.be.equal(5);
+          done();
+        });
+      });
+      
+    };
+    
+    scheduler.scheduleBulk(scheduleForPurge, expectation);
+  });
+});
+
+describe('list', () => {
+  const scheduleForList = [
+    {
+      name: 'event-to-list',
+      data: 2,
+      after: moment().add(15, 'm').toDate()
+    },
+    {
+      name: 'event-to-list',
+      data: 3,
+      after: moment().add(25, 'm').toDate()
+    },
+    {
+      name: 'event-to-list',
+      data: 1,
+      after: moment().add(8, 'm').toDate()
+    },
+    {
+      name: 'event-to-list',
+      data: 4,
+      after: moment().add(66, 'm').toDate()
+    },
+    {
+      name: 'event-to-list',
+      data: 5,
+      after: moment().add(5000, 'm').toDate()
+    }
+  ];
+  
+  it('should list by saved order', done => {
+    const expectation = (olderr, oldResult) => {
+      if (olderr) {
+        console.error('olderr: ', olderr);
+      }
+      
+      scheduler.list({}, (err, result) => {
+        if (err) {
+          console.error('err: ', err);
+        }
+        
+        for (let i = 0; i < scheduleForList.length; i++) {
+          expect(result[i].data).to.be.equal(scheduleForList[i].data);
+        }
+        
+        done();
+      });
+    };
+    
+    scheduler.scheduleBulk([...scheduleForList], expectation);
+  });
+  
+  it('should list by time to schedule (asc)', done => {
+    const expectation = (olderr, oldResult) => {
+      if (olderr) {
+        console.error('olderr: ', olderr);
+      }
+      
+      scheduler.list({ bySchedule: true }, (err, result) => {
+        if (err) {
+          console.error('err: ', err);
+        }
+        
+        for (let i = 0; i < scheduleForList.length; i++) {
+          expect(result[i].data).to.be.equal(i + 1);
+        }
+        
+        done();
+      });
+    };
+    
+    scheduler.scheduleBulk([...scheduleForList], expectation);
+  });
+  
+  it('should list by time to schedule (asc)', done => {
+    let j = 5;
+    const expectation = (olderr, oldResult) => {
+      if (olderr) {
+        console.error('olderr: ', olderr);
+      }
+      
+      scheduler.list({ bySchedule: true, asc: -1 }, (err, result) => {
+        if (err) {
+          console.error('err: ', err);
+        }
+        
+        for (let i = 0; i < scheduleForList.length; i++) {
+          expect(result[i].data).to.be.equal(j--);
+        }
+        
+        done();
+      });
+    };
+    
+    scheduler.scheduleBulk([...scheduleForList], expectation);
   });
 });

@@ -17,7 +17,8 @@
     "tasks",
     "recurring",
     "cron",
-    "more"
+    "more",
+    "plus"
   ],
   "repository": {
     "type": "git",
@@ -31,9 +32,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "codacy-coverage": "^3.4.0",
-    "karma": "^4.0.1",
     "mocha": "^6.0.2",
-    "mocha-logger": "^1.0.6",
     "nyc": "^13.3.0",
     "projectz": "^1.7.4",
     "should": "^13.2.3",
