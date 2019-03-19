@@ -421,7 +421,7 @@ describe('purge', () => {
     }
   ];
   
-  it('should throw an error', done => {
+  it('should callback an error', done => {
     const expectation = (olderr, oldResult) => {
       expect(olderr).to.be.equal(genericError);
       
@@ -556,6 +556,66 @@ describe('list', () => {
   });
 });
 
+describe('remove', () => {
+  const after = moment().add(25, 'm').toDate();
+  const scheduleForRemove = [
+    {
+      name: 'event-to-remove',
+      data: 2,
+      after: moment().add(15, 'm').toDate()
+    },
+    {
+      name: 'event-to-remove',
+      data: 3,
+      after: after
+    },
+    {
+      name: 'event-to-remove',
+      data: 1,
+      after: moment().add(8, 'm').toDate()
+    },
+    {
+      name: 'event-to-remove',
+      data: 4,
+      after: moment().add(66, 'm').toDate()
+    },
+    {
+      name: 'event-to-remove',
+      data: 5,
+      after: moment().add(5000, 'm').toDate()
+    }
+  ];
+  
+  beforeEach(done => {
+    scheduler.scheduleBulk([...scheduleForRemove], () => {
+      done();
+    });
+  });
+  
+  it('should callback an error', done => {
+    const expectation = (olderr, oldResult) => {
+      expect(olderr).to.be.equal(genericError);
+      
+      done();
+    };
+    
+    scheduler.remove({}, expectation);
+  });
+  
+  it('should remove by after', done => {
+    scheduler.remove({ after }, (err, result) => {
+      if (err) {
+        console.error('err: ', err);
+      }
+      
+      expect(result.result.ok).to.be.equal(1);
+      expect(result.result.n).to.be.equal(1);
+      expect(result.deletedCount).to.be.equal(1);
+      
+      done();
+    });
+  });
+});
 
 
 
