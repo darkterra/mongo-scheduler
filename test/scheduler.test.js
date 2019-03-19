@@ -346,27 +346,27 @@ describe('emitter', () => {
 describe('bulk', () => {
   const bulkSchedule = [
     {
-      name: 'event-to-purge',
+      name: 'event-to-bulk',
       after: moment().add(15, 'm').toDate()
     },
     {
-      name: 'event-to-purge',
+      name: 'event-to-bulk',
       after: moment().add(25, 'm').toDate()
     },
     {
-      name: 'event-to-purge',
+      name: 'event-to-bulk',
       after: moment().add(8, 'm').toDate()
     },
     {
-      name: 'event-to-purge',
+      name: 'event-to-bulk',
       after: moment().add(66, 'm').toDate()
     },
     {
-      name: 'event-to-purge',
+      name: 'event-to-bulk',
       after: moment().add(5000, 'm').toDate()
     },
     {
-      name: 'event-to-purge',
+      name: 'event-to-bulk',
       data: 'this is hacked scheduler !!!',
       after: moment().add(5000, 'm').toDate()
     }

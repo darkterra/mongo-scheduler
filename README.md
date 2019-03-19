@@ -87,7 +87,7 @@ const scheduler = new msm(connection, options);
 
 ## schedule()
 
-_`schedule` method allows to create events (stored in MongoDB) that will trigger according to the conditions described below :_
+_`schedule` method allows to create event (stored in MongoDB) that will trigger according to the conditions described below :_
 
 ###### Schedules the most basic event:
 
@@ -152,6 +152,69 @@ scheduler.schedule(event)
 const event = { name: 'creditCardCheck', collection: 'users', query: {}, cron: '0 0 23 * * *' };
 scheduler.schedule(event)
 ```
+
+---------------------------------------
+
+## scheduleBulk()
+
+_`scheduleBulk` method allows to create multiple events at one time (stored in MongoDB) that will trigger according to the conditions described below :_
+
+###### Schedules the most basic event:
+
+```javascript
+const events = [{ 
+  name: 'event-to-bulk', 
+  after: moment().add(15, 'm').toDate()
+}, {
+  name: 'event-to-bulk',
+  after: moment().add(25, 'm').toDate()
+}, {
+  name: 'event-to-bulk',
+  after: moment().add(8, 'm').toDate()
+}, {
+  name: 'event-to-bulk',
+  after: moment().add(66, 'm').toDate()
+}, {
+  name: 'event-to-bulk',
+  after: moment().add(5000, 'm').toDate()
+}, {
+  name: 'event-to-bulk',
+  data: 'this is hacked scheduler !!!',
+  after: moment().add(5000, 'm').toDate()  // This event has the same name and after value, so it will update the event just above
+}];
+
+scheduler.scheduleBulk(events, (err, result) => {
+  if (err) {
+    console.error(err);
+  }
+});
+// This event should trigger the "scheduler.on('event-to-bulk', callback);" 8 min, and in 15 min, and in 15 min, and in 66 min, and in 5000 min
+```
+
+If is your first scheduling event, it's create the `scheduled_events` collection with your first event stored.
+
+You can also use the same event name multiple times, as long as the `id` and / or `after` is different, otherwise it will update the document stored in mongodb.
+
+### Arguments
+
+*   **Events [\<Object>]**
+
+| Name | Type | Description | Optional |
+| :- | :- | :- | :-: |
+| name | String | Name of event that should be fired. | **false** |
+| after | Date | Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls. | true |
+| id | ObjectId or String | \_id field of the document this event corresponds to. | true |
+| cron | String | **(Override 'after')**. A cron string representing a frequency this should fire on. Ex: `cron: '0 0 23 * * *'`, see: <https://www.npmjs.com/package/cron-parser>. | true |
+| collection | Object | Name of the collection to use for the **query** parameter _(just below)_. | true |
+| query | Object | A MongoDB query expression to select document that this event should be triggered _(only if the `collection` property is set)_ for. Ex: `{ payement: true }`, see: <https://docs.mongodb.com/manual/core/document/#document-query-filter>. | true |
+| data | Object or Primitive | Extra data to attach to the event. | true |
+
+*   **callback \<Function>**
+
+| Name | Type | Description | Optional |
+| :- | :- | :- | :-: |
+| err | String or Object | Tell you what wrong when the module try to create or update a schedule event | true |
+| result | Object | The collection result callback. | true |
 
 ---------------------------------------
 
@@ -231,12 +294,20 @@ scheduler.on('creditCardCheck', callback);
 _`list` method allows to list all events (stored in MongoDB) :_
 
 ```javascript
-scheduler.list((err, events) => {
-  // Do something with events
+const options = {};
+scheduler.list(options, (err, events) => {
+  // Do something with events, by default return by the date and time they were added to the db
 });
 ```
 
 ### Arguments
+
+*   **options \<Object>**
+
+| Name | Type | Description | Optional |
+| :- | :- | :- | :-: |
+| bySchedule | Bool | Return list of events by schedule time _(after property)_ | true |
+| asc | Int |  **1** return ascendant schedule time. **-1** return descendant schedule time `Default: 1`  | true |
 
 *   **callback \<Function>**
 
