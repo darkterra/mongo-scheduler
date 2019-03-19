@@ -58,30 +58,30 @@ You can visit my blog [https://darkterra.fr/](https://darkterra.fr/) for [use ca
 
 ```javascript
 const msm = require('mongo-scheduler-more');
-const scheduler = new msm(connection, options);
+const scheduler = new msm('mongodb://localhost:27017/scheduler-db', options);
 ```
 
 ### Arguments
 
 *   **connection \<String> or \<Object>**
 
-| Type | Description | Optional |
-| :- | :- | :-: |
-| String or Object | Use for initiate the connexion with MongoDB, you can use an classical connexion string (i.e.: "mongodb://localhost:27017/scheduler-db") or a mongoose connection object | **false** |
+|Type             |Description                                                                                                              |Optional   |
+|:-               |:-                                                                                                                       |:-:        |
+|String or Object |Use for initiate the connexion with MongoDB, you can use an classical connexion string or a mongoose connection object.  |**false**  |
 
 *   **options \<Object>**
 
-| Name | Type | Description | Driver Option | Optional |
-| :- | :- | :- | :-: | :-: |
-| dbname | String | You can set (and overright) the name of DataBase to use. _(only if you use the connexion string)_ | **false** | true |
-| pollInterval | Number | Frequency in ms that the scheduler should poll the db. `Default: 60000 (1 minute)`. | **false** | true |
-| doNotFire | Bool | If set to true, this instance will only schedule events, not fire them. `Default: false`. | **false** | true |
-| useNewUrlParser | Bool | If set to false, the mongo driver use the old parser. `Default: true`. | true | true |
-| loggerLevel | String | The logging level (error / warn / info / debug). | true | true |
-| logger | Object | Custom logger object. | true | true |
-| validateOptions | Bool | Validate MongoClient passed in options for correctness. `Default: false` _(only if you use the connection **string**)_ | true | true |
-| auth | Object | { user: 'your\_ddb\_user', password: 'your\_ddb\_password'}. | true | true |
-| authMechanism | String | Mechanism for authentication: MDEFAULT, GSSAPI, PLAIN, MONGODB-X509, or SCRAM-SHA-1 | true | true |
+|Name             |Type   |Description                                                                                                            |Driver Option  |Optional |
+|:-               |:-     |:-                                                                                                                     |:-:            |:-:      |
+|dbname           |String |You can set (and overright) the name of DataBase to use. _(only if you use the connexion string)_                      |**false**      |true     |
+|pollInterval     |Number |Frequency in ms that the scheduler should poll the db. `Default: 60000 (1 minute)`.                                    |**false**      |true     |
+|doNotFire        |Bool   |If set to true, this instance will only schedule events, not fire them. `Default: false`.                              |**false**      |true     |
+|useNewUrlParser  |Bool   |If set to false, the mongo driver use the old parser. `Default: true`.                                                 |true           |true     |
+|loggerLevel      |String |The logging level (error / warn / info / debug).                                                                       |true           |true     |
+|logger           |Object |Custom logger object.                                                                                                  |true           |true     |
+|validateOptions  |Bool   |Validate MongoClient passed in options for correctness. `Default: false` _(only if you use the connection **string**)_ |true           |true     |
+|auth             |Object |{ user: 'your\_ddb\_user', password: 'your\_ddb\_password'}.                                                           |true           |true     |
+|authMechanism    |String |Mechanism for authentication: MDEFAULT, GSSAPI, PLAIN, MONGODB-X509, or SCRAM-SHA-1                                    |true           |true     |
 
 ---------------------------------------
 
@@ -109,22 +109,22 @@ You can also use the same event name multiple times, as long as the `id` and / o
 
 *   **Event \<Object>**
 
-| Name | Type | Description | Optional |
-| :- | :- | :- | :-: |
-| name | String | Name of event that should be fired. | **false** |
-| after | Date | Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls. | true |
-| id | ObjectId or String | \_id field of the document this event corresponds to. | true |
-| cron | String | **(Override 'after')**. A cron string representing a frequency this should fire on. Ex: `cron: '0 0 23 * * *'`, see: <https://www.npmjs.com/package/cron-parser>. | true |
-| collection | Object | Name of the collection to use for the **query** parameter _(just below)_. | true |
-| query | Object | A MongoDB query expression to select document that this event should be triggered _(only if the `collection` property is set)_ for. Ex: `{ payement: true }`, see: <https://docs.mongodb.com/manual/core/document/#document-query-filter>. | true |
-| data | Object or Primitive | Extra data to attach to the event. | true |
+|Name       |Type                 |Description                                                                                                                                                                                                                                                        |Optional |
+|:-         |:-                   |:-                                                                                                                                                                                                                                                                 |:-:      |
+|name       |String               |Name of event that should be fired.                                                                                                                                                                                                                                |**false**|
+|after      |Date                 |Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls.                                                                                                                                                       |true     |
+|id         |ObjectId or String   |\_id field of the document this event corresponds to.                                                                                                                                                                                                              |true     |
+|cron       |String               |**(Override 'after')**. A cron string representing a frequency this should fire on. Ex: `cron: '0 0 23 * * *'`, see: [cron-parser](https://www.npmjs.com/package/cron-parser).                                                                                     |true     |
+|collection |Object               |Name of the collection to use for the **query** parameter _(just below)_.                                                                                                                                                                                          |true     |
+|query      |Object               |A MongoDB query expression to select document that this event should be triggered _(only if the `collection` property is set)_ for. Ex: `{ payement: true }`, see: [document-query-filter](https://docs.mongodb.com/manual/core/document/#document-query-filter).  |true     |
+|data       |Object or Primitive  |Extra data to attach to the event.                                                                                                                                                                                                                                 |true     |
 
 *   **callback \<Function>**
 
-| Name | Type | Description | Optional |
-| :- | :- | :- | :-: |
-| err | String or Object | Tell you what wrong when the module try to create or update a schedule event | true |
-| result | Object | The collection result callback. Contain 2 properties : `lastErrorObject`, `value` | true |
+|Name   |Type             |Description                                                                        |Optional |
+|:-     |:-               |:-                                                                                 |:-:      |
+|err    |String or Object |Tell you what wrong when the module try to create or update a schedule event       |true     |
+|result |Object           |The collection result callback. Contain 2 properties : `lastErrorObject`, `value`  |true     |
 
 ---------------------------------------
 
@@ -199,22 +199,22 @@ You can also use the same event name multiple times, as long as the `id` and / o
 
 *   **Events [\<Object>]**
 
-| Name | Type | Description | Optional |
-| :- | :- | :- | :-: |
-| name | String | Name of event that should be fired. | **false** |
-| after | Date | Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls. | true |
-| id | ObjectId or String | \_id field of the document this event corresponds to. | true |
-| cron | String | **(Override 'after')**. A cron string representing a frequency this should fire on. Ex: `cron: '0 0 23 * * *'`, see: <https://www.npmjs.com/package/cron-parser>. | true |
-| collection | Object | Name of the collection to use for the **query** parameter _(just below)_. | true |
-| query | Object | A MongoDB query expression to select document that this event should be triggered _(only if the `collection` property is set)_ for. Ex: `{ payement: true }`, see: <https://docs.mongodb.com/manual/core/document/#document-query-filter>. | true |
-| data | Object or Primitive | Extra data to attach to the event. | true |
+|Name       |Type                 |Description                                                                                                                                                                                                                                                        |Optional |
+|:-         |:-                   |:-                                                                                                                                                                                                                                                                 |:-:      |
+|name       |String               |Name of event that should be fired.                                                                                                                                                                                                                                |**false**|
+|after      |Date                 |Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls.                                                                                                                                                       |true     |
+|id         |ObjectId or String   |\_id field of the document this event corresponds to.                                                                                                                                                                                                              |true     |
+|cron       |String               |**(Override 'after')**. A cron string representing a frequency this should fire on. Ex: `cron: '0 0 23 * * *'`, see: [cron-parser](https://www.npmjs.com/package/cron-parser).                                                                                     |true     |
+|collection |Object               |Name of the collection to use for the **query** parameter _(just below)_.                                                                                                                                                                                          |true     |
+|query      |Object               |A MongoDB query expression to select document that this event should be triggered _(only if the `collection` property is set)_ for. Ex: `{ payement: true }`, see: [document-query-filter](https://docs.mongodb.com/manual/core/document/#document-query-filter).  |true     |
+|data       |Object or Primitive  |Extra data to attach to the event.                                                                                                                                                                                                                                 |true     |
 
 *   **callback \<Function>**
 
-| Name | Type | Description | Optional |
-| :- | :- | :- | :-: |
-| err | String or Object | Tell you what wrong when the module try to create or update a schedule event | true |
-| result | Object | The collection result callback. | true |
+|Name   |Type             |Description                                                                  |Optional |
+|:-     |:-               |:-                                                                           |:-:      |
+|err    |String or Object |Tell you what wrong when the module try to create or update a schedule event |true     |
+|result |Object           |The collection result callback.                                              |true     |
 
 ---------------------------------------
 
@@ -236,16 +236,16 @@ scheduler.on('basicUsage', callback);
 
 *   **name \<String>**
 
-| Type | Description | Optional |
-| :- | :- | :-: |
-| String | Name of listened event| **false** |
+|Type   |Description            |Optional   |
+|:-     |:-                     |:-:        |
+|String |Name of listened event |**false**  |
 
 *   **callback \<Function>**
 
-Name | Type | Description | Optional
-:-|:-|:-|:-:
-event | Object | This is the original event stored into MongoDB when you use the `scheduler.schedule()` function | true
-result | Object or Array | If you use the properties `collection` and `query`, you get the result here | true
+|Name   |Type             |Description                                                                                      |Optional |
+|:-     |:-               |:-                                                                                               |:-:      |
+|event  |Object           |This is the original event stored into MongoDB when you use the `scheduler.schedule()` function  |true     |
+|result |Object or Array  |If you use the properties `collection` and `query`, you get the result here                      |true     |
 
 ###### Event handler and data property:
 
@@ -304,17 +304,17 @@ scheduler.list(options, (err, events) => {
 
 *   **options \<Object>**
 
-| Name | Type | Description | Optional |
-| :- | :- | :- | :-: |
-| bySchedule | Bool | Return list of events by schedule time _(after property)_ | true |
-| asc | Int |  **1** return ascendant schedule time. **-1** return descendant schedule time `Default: 1`  | true |
+|Name       |Type |Description                                                                                |Optional |
+|:-         |:-   |:-                                                                                         |:-:      |
+|bySchedule |Bool |Return list of events by schedule time _(after property)_                                  |true     |
+|asc        |Int  |**1** return ascendant schedule time. **-1** return descendant schedule time `Default: 1`  |true     |
 
 *   **callback \<Function>**
 
-| Name | Type | Description | Optional |
-| :- | :- | :- | :-: |
-| err | String or Object | Tell you what wrong when the module try list all events | true |
-| result | [Object] | List of object | true |
+|Name   |Type             |Description                                              |Optional |
+|:-     |:-               |:-                                                       |:-:      |
+|err    |String or Object |Tell you what wrong when the module try list all events  |true     |
+|result |[Object]         |List of object                                           |true     |
 
 ---------------------------------------
 
@@ -331,16 +331,16 @@ scheduler.findByName({ name: 'abandonedShoppingCart' }, (err, event) => {
 
 *   **name \<String>**
 
-| Name || Type | Description | Optional |
-| :- | :- | :- | :-: |
-| name | String | Name of listened event| **false** |
+|Name |Type   |Description            |Optional   |
+|:-   |:-     |:-                     |:-:        |
+|name |String |Name of listened event |**false**  |
 
 *   **callback \<Function>**
 
-| Name | Type | Description | Optional |
-| :- | :- | :- | :-: |
-| err | String or Object | Tell you what wrong when the module try trigger the event | true |
-| event | Object | This is the original event stored into MongoDB when you use the `scheduler.schedule()` function | true |
+|Name   |Type             |Description                                                                                      |Optional |
+|:-     |:-               |:-                                                                                               |:-:      |
+|err    |String or Object |Tell you what wrong when the module try trigger the event                                        |true     |
+|event  |Object           |This is the original event stored into MongoDB when you use the `scheduler.schedule()` function  |true     |
 
 ---------------------------------------
 
@@ -361,17 +361,17 @@ scheduler.findByStorageId(params, (err, event) => {
 
 *   **params \<Object>**
 
-| Name | Type | Description | Optional |
-| :- | :- | :- | :-: |
-| id | ObjectId or String | The id searched _(remember, this id is not the event itself id)_  | **false** |
-| name | String | Name of listened event | **false** |
+|Name |Type               |Description                                                        |Optional   |
+|:-   |:-                 |:-                                                                 |:-:        |
+|id   |ObjectId or String |The id searched _(remember, this id is not the event itself id)_   |**false**  |
+|name |String             |Name of listened event                                             |**false**  |
 
 *   **callback \<Function>**
 
-| Name | Type | Description | Optional |
-| :- | :- | :- | :-: |
-| event | Object | This is the original event stored into MongoDB when you use the `scheduler.schedule()` function | true |
-| result | Object or Array | If you use the properties `collection` and `query`, you get the result here | true |
+|Name   |Type             |Description                                                                                      |Optional |
+|:-     |:-               |:-                                                                                               |:-:      |
+|event  |Object           |This is the original event stored into MongoDB when you use the `scheduler.schedule()` function  |true     |
+|result |Object or Array  |If you use the properties `collection` and `query`, you get the result here.                     |true     |
 
 ---------------------------------------
 
@@ -391,18 +391,18 @@ scheduler.remove(params, (err, event) => {
 
 *   **params \<Object>**
 
-| Name | Type | Description | Optional |
-| :- | :- | :- | :-: |
-| name | String | Name of listened event | **false** |
-| id | ObjectId or String | The id searched _(remember, this id is not the event itself id)_  | true |
-| after | Date | Remove only the events who have the exacte same date | true |
+|Name   |Type               |Description                                                        |Optional   |
+|:-     |:-                 |:-                                                                 |:-:        |
+|name   |String             |Name of listened event                                             |**false**  |
+|id     |ObjectId or String |The id searched _(remember, this id is not the event itself id)_   |true       |
+|after  |Date               |Remove only the events who have the exacte same date               |true       |
 
 *   **callback \<Function>**
 
-| Name | Type | Description | Optional |
-| :- | :- | :- | :-: |
-| event | Object | This is the original event stored into MongoDB when you use the `scheduler.schedule()` function | true |
-| result | Object or Array | If you use the properties `collection` and `query`, you get the result here | true |
+|Name   |Type             |Description                                                                                      |Optional |
+|:-     |:-               |:-                                                                                               |:-:      |
+|event  |Object           |This is the original event stored into MongoDB when you use the `scheduler.schedule()` function  |true     |
+|result |Object or Array  |If you use the properties `collection` and `query`, you get the result here                      |true     |
 
 ---------------------------------------
 
@@ -422,16 +422,16 @@ scheduler.purge(params, (err, event) => {
 
 *   **params \<Object>**
 
-| Name | Type | Description | Optional |
-| :- | :- | :- | :-: |
-| force | Bool | It's a simple crazy guard, just not to delete all the events stored inadvertently | **false |
+|Name   |Type |Description                                                                        |Optional   |
+|:-     |:-   |:-                                                                                 |:-:        |
+|force  |Bool |It's a simple crazy guard, just not to delete all the events stored inadvertently  |**false**  |
 
 *   **callback \<Function>**
 
-| Name | Type | Description | Optional |
-| :- | :- | :- | :-: |
-| event | Object | This is the original event stored into MongoDB when you use the `scheduler.schedule()` function | true |
-| result | Object or Array | If you use the properties `collection` and `query`, you get the result here | true |
+|Name   |Type             |Description                                                                                      |Optional |
+|:-     |:-               |:-                                                                                               |:-:      |
+|event  |Object           |This is the original event stored into MongoDB when you use the `scheduler.schedule()` function  |true     |
+|result |Object or Array  |If you use the properties `collection` and `query`, you get the result here                      |true     |
 
 ---------------------------------------
 
