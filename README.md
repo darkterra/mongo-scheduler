@@ -323,7 +323,7 @@ scheduler.list(options, (err, events) => {
 _`findByName` method allows to get the first event by name (stored in MongoDB) :_
 
 ```javascript
-scheduler.findByName('abandonedShoppingCart', (err, event) => {
+scheduler.findByName({ name: 'abandonedShoppingCart' }, (err, event) => {
   // Do something with event
 });
 ```
@@ -331,9 +331,9 @@ scheduler.findByName('abandonedShoppingCart', (err, event) => {
 
 *   **name \<String>**
 
-| Type | Description | Optional |
-| :- | :- | :-: |
-| String | Name of listened event| **false** |
+| Name || Type | Description | Optional |
+| :- | :- | :- | :-: |
+| name | String | Name of listened event| **false** |
 
 *   **callback \<Function>**
 
