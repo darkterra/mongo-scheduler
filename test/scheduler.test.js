@@ -19,6 +19,8 @@ const connectionArray = connection.split('/');
 const database        = connectionArray[3] || null;
 const options         = { useNewUrlParser: true };
 
+const genericError = 'Mongo-Scheduler-More: Bad parameters';
+
 let db;
 let events;
 let records;
@@ -419,6 +421,16 @@ describe('purge', () => {
     }
   ];
   
+  it('should throw an error', done => {
+    const expectation = (olderr, oldResult) => {
+      expect(olderr).to.be.equal(genericError);
+      
+      done();
+    };
+    
+    scheduler.purge({}, expectation);
+  });
+  
   it('should purge all events', done => {
     const expectation = (olderr, oldResult) => {
       if (olderr) {
@@ -541,5 +553,17 @@ describe('list', () => {
     };
     
     scheduler.scheduleBulk([...scheduleForList], expectation);
+  });
+});
+
+
+
+
+
+describe('version', () => {
+  const currentVersion = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'))).version;
+  
+  it(`should show the last version: ${currentVersion}`, () => {
+    expect(currentVersion).to.be.equal(scheduler.version());
   });
 });
