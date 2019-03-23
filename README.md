@@ -304,10 +304,11 @@ scheduler.list(options, (err, events) => {
 
 *   **options \<Object>**
 
-|Name       |Type |Description                                                                                |Optional |
-|:-         |:-   |:-                                                                                         |:-:      |
-|bySchedule |Bool |Return list of events by schedule time _(after property)_                                  |true     |
-|asc        |Int  |**1** return ascendant schedule time. **-1** return descendant schedule time `Default: 1`  |true     |
+|Name       |Type  |Description                                                                                                                                                                   |Optional |
+|:-         |:-    |:-                                                                                                                                                                            |:-:      |
+|bySchedule |Bool  |Return list of events by schedule time _(after property)_                                                                                                                     |true     |
+|asc        |Int   |**1** return ascendant schedule time. **-1** return descendant schedule time `Default: 1`                                                                                     |true     |
+|query      |Object|Filter the results like with valid mongodb query. For more infos take a look [here](https://docs.mongodb.com/manual/reference/method/db.collection.find/#query-for-equality)  |true     |
 
 *   **callback \<Function>**
 
