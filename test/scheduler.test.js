@@ -567,7 +567,7 @@ describe('remove', () => {
     {
       name: 'event-to-remove',
       data: 3,
-      after: after
+      after
     },
     {
       name: 'event-to-remove',
