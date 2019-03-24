@@ -14,13 +14,14 @@ const defaultEvent = {
 describe('schedule builder', () => {
   it('should return doc to insert', () => {
     const { doc } = helper.buildSchedule(defaultEvent);
-    
+
     doc.should.have.properties({
       name: 'name',
       status: 'ready',
       conditions: { after: 'date' },
       storage: { query: 'query', collection: 'collection', id: 'recordId' },
       data: { my: 'data' },
+      cron: undefined,
       options: { emitPerDoc: false }
     });
   });

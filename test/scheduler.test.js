@@ -150,6 +150,7 @@ describe('emitter', () => {
   
   it('should emit an event with matching records', done => {
     let running = true;
+    
     scheduler.on('awesome', (event, docs) => {
       expect(docs[0].message).to.be.equal('This is a record');
       
@@ -212,7 +213,7 @@ describe('emitter', () => {
 
   it('deletes executed events', done => {
     const expectation = () => {
-      events.find({name: 'awesome'}).toArray((err, docs) => {
+      events.find({ name: 'awesome' }).toArray((err, docs) => {
         if (err) {
           console.error(err);
         }
