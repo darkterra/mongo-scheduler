@@ -331,12 +331,12 @@ describe('emitter', () => {
       
       
       setTimeout(() => {
-        scheduler.findByName({ name: 'empty' }, (err, doc) => {
+        scheduler.findByName({ name: 'empty' }, (err, [event]) => {
           if (err) {
             console.error(err);
           }
           
-          expectation(doc);
+          expectation(event);
         });
       },
       50);
@@ -373,6 +373,26 @@ describe('bulk', () => {
       after: moment().add(5000, 'm').toDate()
     }
   ];
+  
+  it('should callback an error', done => {
+    const expectation = (olderr, oldResult) => {
+      expect(olderr).to.be.equal(genericError);
+      
+      done();
+    };
+    
+    scheduler.remove({}, expectation);
+  });
+  
+  it('should callback an error', done => {
+    const expectation = (olderr, oldResult) => {
+      expect(olderr).to.be.equal(genericError);
+      
+      done();
+    };
+    
+    scheduler.scheduleBulk(null, expectation);
+  });
   
   it('should schedule all events at once request to mongo', done => {
     const expectation = (olderr, oldResult) => {
@@ -488,71 +508,137 @@ describe('list', () => {
     }
   ];
   
+  beforeEach(done => {
+    scheduler.scheduleBulk([...scheduleForList], () => {
+      done();
+    });
+  });
+  
   it('should list by saved order', done => {
-    const expectation = (olderr, oldResult) => {
-      if (olderr) {
-        console.error('olderr: ', olderr);
+    scheduler.list({}, (err, result) => {
+      if (err) {
+        console.error('err: ', err);
       }
       
-      scheduler.list({}, (err, result) => {
-        if (err) {
-          console.error('err: ', err);
-        }
-        
-        for (let i = 0; i < scheduleForList.length; i++) {
-          expect(result[i].data).to.be.equal(scheduleForList[i].data);
-        }
-        
-        done();
-      });
-    };
-    
-    scheduler.scheduleBulk([...scheduleForList], expectation);
+      for (let i = 0; i < scheduleForList.length; i++) {
+        expect(result[i].data).to.be.equal(scheduleForList[i].data);
+      }
+      
+      done();
+    });
   });
   
   it('should list by time to schedule (asc)', done => {
-    const expectation = (olderr, oldResult) => {
-      if (olderr) {
-        console.error('olderr: ', olderr);
+    scheduler.list({ bySchedule: true }, (err, result) => {
+      if (err) {
+        console.error('err: ', err);
       }
       
-      scheduler.list({ bySchedule: true }, (err, result) => {
-        if (err) {
-          console.error('err: ', err);
-        }
-        
-        for (let i = 0; i < scheduleForList.length; i++) {
-          expect(result[i].data).to.be.equal(i + 1);
-        }
-        
-        done();
-      });
-    };
-    
-    scheduler.scheduleBulk([...scheduleForList], expectation);
+      for (let i = 0; i < scheduleForList.length; i++) {
+        expect(result[i].data).to.be.equal(i + 1);
+      }
+      
+      done();
+    });
   });
   
   it('should list by time to schedule (asc)', done => {
     let j = 5;
-    const expectation = (olderr, oldResult) => {
-      if (olderr) {
-        console.error('olderr: ', olderr);
+    scheduler.list({ bySchedule: true, asc: -1 }, (err, result) => {
+      if (err) {
+        console.error('err: ', err);
       }
       
-      scheduler.list({ bySchedule: true, asc: -1 }, (err, result) => {
-        if (err) {
-          console.error('err: ', err);
-        }
-        
-        for (let i = 0; i < scheduleForList.length; i++) {
-          expect(result[i].data).to.be.equal(j--);
-        }
-        
-        done();
-      });
-    };
-    
-    scheduler.scheduleBulk([...scheduleForList], expectation);
+      for (let i = 0; i < scheduleForList.length; i++) {
+        expect(result[i].data).to.be.equal(j--);
+      }
+      
+      done();
+    });
+  });
+});
+
+describe('findBy', () => {
+  const scheduleForFindBy = [
+    {
+      name: 'event-to-find',
+      data: 2,
+      id: '5c96c3a3a28fe9d02433b24e',
+      after: moment().add(15, 'm').toDate()
+    },
+    {
+      name: 'event-to-find',
+      data: 1,
+      id: '5c96c3a3a28fe9d02433b250',
+      after: moment().add(8, 'm').toDate()
+    },
+    {
+      name: 'event-to-find',
+      data: 4,
+      after: moment().add(66, 'm').toDate()
+    },
+    {
+      name: 'event-to-find-new',
+      data: 5,
+      id: '5c96c3a3a28fe9d02433b250',
+      after: moment().add(5000, 'm').toDate()
+    }
+  ];
+  
+  beforeEach(done => {
+    scheduler.scheduleBulk([...scheduleForFindBy], () => {
+      done();
+    });
+  });
+  
+  it('name should callback error', done => {
+    scheduler.findByName({}, err => {
+      expect(err).to.be.equal(genericError);
+      done();
+    });
+  });
+  
+  it('name', done => {
+    scheduler.findByName({ name: 'event-to-find' }, (err, event) => {
+      if (err) {
+        console.error(err);
+      }
+      
+      event.length.should.eql(3);
+      done();
+    });
+  });
+  
+  it('storageId should callback error', done => {
+    scheduler.findByStorageId({}, err => {
+      expect(err).to.be.equal(genericError);
+      done();
+    });
+  });
+  
+  it('storageId', done => {
+    scheduler.findByStorageId({ id: '5c96c3a3a28fe9d02433b250' }, (err, event) => {
+      if (err) {
+        console.error(err);
+      }
+      
+      event.length.should.eql(2);
+      event[0].storage.id.should.eql('5c96c3a3a28fe9d02433b250');
+      event[1].storage.id.should.eql('5c96c3a3a28fe9d02433b250');
+      done();
+    });
+  });
+  
+  it('storageId and name', done => {
+    scheduler.findByStorageId({ name: 'event-to-find', id: '5c96c3a3a28fe9d02433b250' }, (err, event) => {
+      if (err) {
+        console.error(err);
+      }
+      
+      event.length.should.eql(1);
+      event[0].storage.id.should.eql('5c96c3a3a28fe9d02433b250');
+      done();
+    });
   });
 });
 
@@ -580,7 +666,7 @@ describe('remove', () => {
       after: moment().add(66, 'm').toDate()
     },
     {
-      name: 'event-to-remove',
+      name: 'event-to-remove-new',
       data: 5,
       after: moment().add(5000, 'm').toDate()
     }
@@ -615,9 +701,61 @@ describe('remove', () => {
       done();
     });
   });
+  
+  it('should remove by name', done => {
+    scheduler.remove({ name: 'event-to-remove' }, (err, result) => {
+      if (err) {
+        console.error('err: ', err);
+      }
+      
+      expect(result.result.ok).to.be.equal(1);
+      expect(result.result.n).to.be.equal(4);
+      expect(result.deletedCount).to.be.equal(4);
+      
+      done();
+    });
+  });
+  
+  it('should remove by id (ObjectID)', done => {
+    scheduler.list({ query: { name: 'event-to-remove-new' }}, (err, [eventToRemove]) => {
+      if (err) {
+        console.log('err: ', err);
+      }
+      
+      scheduler.remove({ id: eventToRemove._id }, (err, result) => {
+        if (err) {
+          console.error('err: ', err);
+        }
+        
+        expect(result.result.ok).to.be.equal(1);
+        expect(result.result.n).to.be.equal(1);
+        expect(result.deletedCount).to.be.equal(1);
+        
+        done();
+      });
+    });
+  });
+  
+  it('should remove by id (String)', done => {
+    scheduler.list({ query: { data: 1 }}, (err, [eventToRemove]) => {
+      if (err) {
+        console.log('err: ', err);
+      }
+      
+      scheduler.remove({ id: eventToRemove._id.toString() }, (err, result) => {
+        if (err) {
+          console.error('err: ', err);
+        }
+        
+        expect(result.result.ok).to.be.equal(1);
+        expect(result.result.n).to.be.equal(1);
+        expect(result.deletedCount).to.be.equal(1);
+        
+        done();
+      });
+    });
+  });
 });
-
-
 
 
 describe('version', () => {

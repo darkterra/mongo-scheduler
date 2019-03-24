@@ -365,7 +365,7 @@ scheduler.findByStorageId(params, (err, event) => {
 |Name |Type               |Description                                                        |Optional   |
 |:-   |:-                 |:-                                                                 |:-:        |
 |id   |ObjectId or String |The id searched _(remember, this id is not the event itself id)_   |**false**  |
-|name |String             |Name of listened event                                             |**false**  |
+|name |String             |Name of listened event                                             |true       |
 
 *   **callback \<Function>**
 

@@ -91,7 +91,7 @@ describe('event builder', () => {
     
     const event = helper.buildEvent(doc);
     
-    event.storage.query.id.should.eql('HI!!!');
+    event.storage.query._id.should.eql('HI!!!');
   });
 
   it('returns additional data', () => {
