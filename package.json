@@ -25,19 +25,19 @@
     "url": "git://github.com/darkterra/mongo-scheduler.git"
   },
   "dependencies": {
-    "check-types": "^8.0.2",
-    "cron-parser": "^2.9.0",
+    "check-types": "^8.0.3",
+    "cron-parser": "^2.11.0",
     "moment": "^2.24.0",
-    "mongodb": "^3.2.2"
+    "mongodb": "^3.2.7"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "codacy-coverage": "^3.4.0",
-    "mocha": "^6.0.2",
-    "nyc": "^13.3.0",
+    "mocha": "^6.1.4",
+    "nyc": "^14.1.1",
     "projectz": "^1.7.4",
     "should": "^13.2.3",
-    "sinon": "^7.3.0"
+    "sinon": "^7.3.2"
   },
   "scripts": {
     "test": "mocha test/ --exit",
