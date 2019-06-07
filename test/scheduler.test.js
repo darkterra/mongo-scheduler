@@ -283,7 +283,7 @@ describe('emitter', () => {
         running = false;
       });
       
-      records.insertOne({message: 'This is a record'}, () => {
+      records.insertOne({ message: 'This is a record' }, () => {
         scheduler.schedule(additionalDetails);
       });
     });
@@ -342,6 +342,36 @@ describe('emitter', () => {
       },
       50);
     });
+  });
+
+  describe('with cron string and endDate option', () => {
+    it('updates the after condition', (done) => {
+      let count = 0;
+      let expectedDate = moment().add(3, 's').toDate();
+      
+      const expectation = (doc) => {
+        count++;
+        
+        if (count >= 2) {
+          const saniDate = moment().toDate();
+          
+          doc.status.should.eql('ready');
+          moment.duration(moment(saniDate).diff(expectedDate)).seconds().should.eql(0);
+          done();
+        }
+      };
+      
+      scheduler.on('endDate setup', (event, docs) => expectation(event));
+      
+      scheduler.schedule({
+        name: 'endDate setup',
+        after: moment().add(15, 'm').toDate(),
+        cron: '*/1 * * * * *',
+        endDate: expectedDate
+      });
+      
+      
+    }).timeout(10000);
   });
 });
 
@@ -659,6 +689,7 @@ describe('remove', () => {
     {
       name: 'event-to-remove',
       data: 1,
+      id: '123456789',
       after: moment().add(8, 'm').toDate()
     },
     {
@@ -690,7 +721,7 @@ describe('remove', () => {
   });
   
   it('should remove by after', done => {
-    scheduler.remove({ after }, (err, result) => {
+    scheduler.remove({ name: 'event-to-remove', after }, (err, result) => {
       if (err) {
         console.error('err: ', err);
       }
@@ -717,13 +748,13 @@ describe('remove', () => {
     });
   });
   
-  it('should remove by id (ObjectID)', done => {
+  it('should remove by eventId (ObjectID)', done => {
     scheduler.list({ query: { name: 'event-to-remove-new' }}, (err, [eventToRemove]) => {
       if (err) {
         console.log('err: ', err);
       }
       
-      scheduler.remove({ id: eventToRemove._id }, (err, result) => {
+      scheduler.remove({ name: 'event-to-remove-new', eventId: eventToRemove._id }, (err, result) => {
         if (err) {
           console.error('err: ', err);
         }
@@ -738,23 +769,17 @@ describe('remove', () => {
   });
   
   it('should remove by id (String)', done => {
-    scheduler.list({ query: { data: 1 }}, (err, [eventToRemove]) => {
+    scheduler.remove({ name: 'event-to-remove-new', id: '123456789' }, (err, result) => {
       if (err) {
-        console.log('err: ', err);
+        console.error('err: ', err);
       }
       
-      scheduler.remove({ id: eventToRemove._id.toString() }, (err, result) => {
-        if (err) {
-          console.error('err: ', err);
-        }
-        
-        expect(result.result.ok).to.be.equal(1);
-        expect(result.result.n).to.be.equal(1);
-        expect(result.deletedCount).to.be.equal(1);
-        
-        done();
+      expect(result.result.ok).to.be.equal(1);
+      expect(result.result.n).to.be.equal(1);
+      expect(result.deletedCount).to.be.equal(1);
+      
+      done();
       });
-    });
   });
 });
 

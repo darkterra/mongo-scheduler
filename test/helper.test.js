@@ -18,7 +18,7 @@ describe('schedule builder', () => {
     doc.should.have.properties({
       name: 'name',
       status: 'ready',
-      conditions: { after: 'date' },
+      conditions: { after: 'date', endDate: undefined },
       storage: { query: 'query', collection: 'collection', id: 'recordId' },
       data: { my: 'data' },
       cron: undefined,
@@ -53,7 +53,7 @@ describe('schedule builder', () => {
     doc.should.have.properties({
       name: 'new-event',
       status: 'ready',
-      conditions: { after: undefined },
+      conditions: { after: undefined, endDate: undefined },
       storage: { query: undefined, collection: undefined, id: undefined },
       data: undefined,
       options: { emitPerDoc: false }

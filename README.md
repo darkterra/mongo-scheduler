@@ -92,7 +92,8 @@ _`schedule` method allows to create event (stored in MongoDB) that will trigger 
 ###### Schedules the most basic event:
 
 ```javascript
-const event = { name: 'basicUsage', after: moment().add(1, 'hours').toDate()};
+const moment = require('moment');
+const event  = { name: 'basicUsage', after: moment().add(1, 'hours').toDate()};
 scheduler.schedule(event, (err, result) => {
   if (err) {
     console.error(err);
@@ -115,6 +116,7 @@ You can also use the same event name multiple times, as long as the `id` and / o
 |after      |Date                 |Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls.                                                                                                                                                       |true     |
 |id         |ObjectId or String   |\_id field of the document this event corresponds to.                                                                                                                                                                                                              |true     |
 |cron       |String               |**(Override 'after')**. A cron string representing a frequency this should fire on. Ex: `cron: '0 0 23 * * *'`, see: [cron-parser](https://www.npmjs.com/package/cron-parser).                                                                                     |true     |
+|endDate    |Date                 |**(Only if the cron option is use)**.  Set a deadline to stop the infinite triggering of the cron option.                                                                                                                                                          |true     |
 |collection |Object               |Name of the collection to use for the **query** parameter _(just below)_.                                                                                                                                                                                          |true     |
 |query      |Object               |A MongoDB query expression to select document that this event should be triggered _(only if the `collection` property is set)_ for. Ex: `{ payement: true }`, see: [document-query-filter](https://docs.mongodb.com/manual/core/document/#document-query-filter).  |true     |
 |data       |Object or Primitive  |Extra data to attach to the event.                                                                                                                                                                                                                                 |true     |
@@ -131,26 +133,64 @@ You can also use the same event name multiple times, as long as the `id` and / o
 ###### Schedules an event with data _(stored directly inside the event object)_:
 
 ```javascript
-const event = { name: 'timeToCheckLicenceKey', after: moment().add(1, 'years').toDate(), data: 'First year offert ;)'};
-scheduler.schedule(event) // This event (timeToCheckLicenceKey) should trigger in one year with extra data value
+const moment = require('moment');
+const event  = { 
+  name: 'timeToCheckLicenceKey',
+  after: moment().add(1, 'years').toDate(),
+  data: 'First year offert ;)'
+};
+
+scheduler.schedule(event);
+//
+// This event (timeToCheckLicenceKey) should trigger in one year with extra data value
 ```
 
 ###### Schedules an event with id _(stored in the storage event object)_:
 
 ```javascript
+const moment = require('moment');
+const event  = {
+  name: 'abandonedShoppingCart',
+  id: '5a5dfd6c4879489ce958df0c',
+  after: moment().add(15, 'minutes').toDate()
+};
+scheduler.schedule(event);
+//
 // This event trigger in 15 mins and allow my server to "remember" the shoppingCart _id: ('5a5dfd6c4879489ce958df0c')
 // and let my server handle with to check if we need to remove this shopping cart
-const event = { name: 'abandonedShoppingCart', id: '5a5dfd6c4879489ce958df0c', after: moment().add(15, 'minutes').toDate()};
-scheduler.schedule(event)
 ```
 
 ###### Schedules an event with collection, query and cron :
 
 ```javascript
+const moment = require('moment');
+const event  = {
+  name: 'creditCardCheck',
+  collection: 'users',
+  query: {},
+  cron: '0 0 23 * * *'
+};
+scheduler.schedule(event);
+//
 // This event is triggered daily at 23h00:00 and allows you to retrieve the list
 // of credit cards that expires in a month. The server only has to send emails to users
-const event = { name: 'creditCardCheck', collection: 'users', query: {}, cron: '0 0 23 * * *' };
-scheduler.schedule(event)
+```
+
+###### Schedules an event with collection, query and cron with an end date :
+
+```javascript
+const moment = require('moment');
+const event  = {
+  name: 'creditCardCheck',
+  collection: 'users',
+  query: {},
+  cron: '0 0 10 * * *',
+  endDate: moment().add(5, 'years').toDate()
+};
+scheduler.schedule(event);
+//
+// This event is triggered daily at 10h00:00 and allows you to retrieve the list
+// of credit cards that expires in a month. The server only has to send emails to users
 ```
 
 ---------------------------------------
@@ -205,6 +245,7 @@ You can also use the same event name multiple times, as long as the `id` and / o
 |after      |Date                 |Time that the event should be triggered at, if left blank it will trigger the next time the scheduler polls.                                                                                                                                                       |true     |
 |id         |ObjectId or String   |\_id field of the document this event corresponds to.                                                                                                                                                                                                              |true     |
 |cron       |String               |**(Override 'after')**. A cron string representing a frequency this should fire on. Ex: `cron: '0 0 23 * * *'`, see: [cron-parser](https://www.npmjs.com/package/cron-parser).                                                                                     |true     |
+|endDate    |Date                 |**(Only if the cron option is use)**.  Set a deadline to stop the infinite triggering of the cron option.                                                                                                                                                          |true     |
 |collection |Object               |Name of the collection to use for the **query** parameter _(just below)_.                                                                                                                                                                                          |true     |
 |query      |Object               |A MongoDB query expression to select document that this event should be triggered _(only if the `collection` property is set)_ for. Ex: `{ payement: true }`, see: [document-query-filter](https://docs.mongodb.com/manual/core/document/#document-query-filter).  |true     |
 |data       |Object or Primitive  |Extra data to attach to the event.                                                                                                                                                                                                                                 |true     |
@@ -392,11 +433,12 @@ scheduler.remove(params, (err, event) => {
 
 *   **params \<Object>**
 
-|Name   |Type               |Description                                                        |Optional   |
-|:-     |:-                 |:-                                                                 |:-:        |
-|name   |String             |Name of listened event                                             |**false**  |
-|id     |ObjectId or String |The id searched _(remember, this id is not the event itself id)_   |true       |
-|after  |Date               |Remove only the events who have the exacte same date               |true       |
+|Name     |Type               |Description                                                                        |Optional   |
+|:-       |:-                 |:-                                                                                 |:-:        |
+|name     |String             |Name of listened event                                                             |**false**  |
+|id       |ObjectId or String |The id searched _(remember, this id is not the event itself id)_                   |true       |
+|eventId  |ObjectId or String |This is the event id itself  _(you can use the 'list' method to get the event id)_ |true       |
+|after    |Date               |Remove only the events who have the exacte same date                               |true       |
 
 *   **callback \<Function>**
 
