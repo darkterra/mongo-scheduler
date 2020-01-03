@@ -1,7 +1,7 @@
 {
   "name": "mongo-scheduler-more",
   "description": "Persistent event scheduler using mongo as storage",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "keywords": [
     "job",
     "jobs",
