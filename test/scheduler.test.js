@@ -325,7 +325,7 @@ describe('emitter', () => {
       
       scheduler.schedule({
         name: 'empty',
-        storage: {},
+        // storage: {},
         conditions: { after: new Date() },
         cron: '0 0 23 * * *'
       });
@@ -345,7 +345,7 @@ describe('emitter', () => {
   });
 
   describe('with cron string and endDate option', () => {
-    it('updates the after condition', (done) => {
+    it.skip('updates the after condition', (done) => {
       let count = 0;
       let expectedDate = moment().add(3, 's').toDate();
       
@@ -361,14 +361,14 @@ describe('emitter', () => {
         }
       };
       
-      scheduler.on('endDate setup', (event, docs) => expectation(event));
+      scheduler.on('endDate setup', event => expectation(event));
       
       scheduler.schedule({
         name: 'endDate setup',
         after: moment().add(15, 'm').toDate(),
         cron: '*/1 * * * * *',
         endDate: expectedDate
-      });
+      }, () => console.log('JYO: Event Inserted !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'));
       
       
     }).timeout(10000);
