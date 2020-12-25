@@ -16,8 +16,10 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x, 15.x]
-        mongodb-version: [4.0, 4.2, 4.4]
+#         node-version: [10.x, 12.x, 14.x, 15.x]
+#         mongodb-version: [4.0, 4.2, 4.4]
+        node-version: [15.x]
+        mongodb-version: [4.4]
 
     steps:
     - uses: actions/checkout@v2
@@ -40,7 +42,7 @@ jobs:
       uses: codacy/codacy-coverage-reporter-action@master
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        coverage-reports: ${{ github.workspace }}/lcov.info
+        coverage-reports: ${{ github.workspace }}/coverage/lcov.info
       
 #   codacy-coverage-reporter:
 #     runs-on: ubuntu-latest
