@@ -38,6 +38,11 @@ jobs:
     - run: npm run build --if-present
     - run: npm run test:coverage
       
+    - run: cat ./coverage/lcov.info
+    - run: cat ${{ github.workspace }}/coverage/lcov.info
+    - run: ls -al ${{ github.workspace }}/coverage
+    - run: ls -al ${{ github.workspace }}
+      
     - name: Run codacy-coverage-reporter
       uses: codacy/codacy-coverage-reporter-action@master
       with:
