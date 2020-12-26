@@ -37,7 +37,7 @@ jobs:
     - run: npm run build --if-present
     - run: npm run test:coverage
     
-    - if: (matrix.node-version == 15.x && matrix.mongodb-version == 4.4)
+    - if: (matrix.node-version == '15.x' && matrix.mongodb-version == 4.4)
       uses: actions/upload-artifact@v2
       with:
         name: coverage-file
