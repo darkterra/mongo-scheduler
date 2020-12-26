@@ -17,7 +17,7 @@
 			"npmversion",
 			"npmdownloads",
 		  "---",
-		  ["badge", {"image": "https://circleci.com/gh/darkterra/mongo-scheduler.svg?style=svg", "alt": "CircleCI Badge", "url": "https://circleci.com/gh/darkterra/mongo-scheduler", "title": "CircleCI Badge"}],
+		  ["badge", {"image": "https://github.com/darkterra/mongo-scheduler/workflows/Node.js%20CI/badge.svg", "alt": "GitHub Actions Badge", "url": "https://github.com/darkterra/mongo-scheduler", "title": "GitHub Actions Badge"}],
 		  ["badge", {"image": "https://api.codacy.com/project/badge/Grade/51fe243879a94a11807318338aac7d8e", "alt": "Codacy Grade Badge", "url": "https://app.codacy.com/app/darkterra/mongo-scheduler?utm_source=github.com&utm_medium=referral&utm_content=darkterra/mongo-scheduler&utm_campaign=Badge_Grade_Settings", "title": "Codacy Grade Badge"}],
 		  ["badge", {"image": "https://api.codacy.com/project/badge/Coverage/22f5c7a46aba46ee822ef36b910c2d06", "alt": "Codacy Coverage Badge", "url": "https://www.codacy.com/app/darkterra/mongo-scheduler?utm_source=github.com&utm_medium=referral&utm_content=darkterra/mongo-scheduler&utm_campaign=Badge_Coverage", "title": "Codacy Coverage Badge"}],
 		  "---",
