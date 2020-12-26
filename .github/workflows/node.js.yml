@@ -45,6 +45,10 @@ jobs:
   upload-coverage:
     if: matrix.node-version == '15.x'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 14.x, 15.x]
+        mongodb-version: [4.0, 4.2, 4.4]
     needs: [build]
  
     steps:
