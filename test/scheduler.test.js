@@ -17,7 +17,7 @@ const scheduler       = new Scheduler(connection, { pollInterval: 250 });
 const MongoClient     = mongo.MongoClient;
 const connectionArray = connection.split('/');
 const database        = connectionArray[3] || null;
-const options         = { useNewUrlParser: true };
+const options         = { useNewUrlParser: true, useUnifiedTopology: true };
 
 const genericError = 'Mongo-Scheduler-More: Bad parameters';
 
@@ -36,12 +36,18 @@ before(done => {
         console.error(err);
       }
       events = results;
-      db.createCollection('records', (err, results) => {
-        if (err) {
-          console.error(err);
-        }
-        records = results;
-        done();
+      db.collection('records').drop((err, delOK) => {
+
+        console.log(err);
+        console.log('delOK: ', delOK);
+
+        db.createCollection('records', (err, results) => {
+          if (err) {
+            console.error(err);
+          }
+          records = results;
+          done();
+        });
       });
     });
   });
@@ -206,7 +212,7 @@ describe('emitter', () => {
       running = false;
     });
     
-    records.insertOne({message: 'This is a record'}, () => {
+    records.insertOne({ message: 'This is a record' }, () => {
       scheduler.schedule(additionalDetails);
     });
   });
@@ -377,31 +383,32 @@ describe('emitter', () => {
 
 
 describe('bulk', () => {
+  const after = moment().toDate();
   const bulkSchedule = [
     {
       name: 'event-to-bulk',
-      after: moment().add(15, 'm').toDate()
+      after: moment(after).add(15, 'm').toDate()
     },
     {
       name: 'event-to-bulk',
-      after: moment().add(25, 'm').toDate()
+      after: moment(after).add(25, 'm').toDate()
     },
     {
       name: 'event-to-bulk',
-      after: moment().add(8, 'm').toDate()
+      after: moment(after).add(8, 'm').toDate()
     },
     {
       name: 'event-to-bulk',
-      after: moment().add(66, 'm').toDate()
+      after: moment(after).add(66, 'm').toDate()
     },
     {
       name: 'event-to-bulk',
-      after: moment().add(5000, 'm').toDate()
+      after: moment(after).add(5000, 'm').toDate()
     },
     {
       name: 'event-to-bulk',
       data: 'this is hacked scheduler !!!',
-      after: moment().add(5000, 'm').toDate()
+      after: moment(after).add(5000, 'm').toDate()
     }
   ];
   
@@ -435,7 +442,7 @@ describe('bulk', () => {
         if (err) {
           console.error(err);
         }
-        
+
         expect(docs.length).to.be.equal(5);
         expect(oldResult.result.nUpserted).to.be.equal(5);
         expect(oldResult.result.nMatched).to.be.equal(1);
@@ -573,7 +580,21 @@ describe('list', () => {
     });
   });
   
-  it('should list by time to schedule (asc)', done => {
+  it('should list by time to schedule (asc explicit)', done => {
+    scheduler.list({ bySchedule: true, asc: 1 }, (err, result) => {
+      if (err) {
+        console.error('err: ', err);
+      }
+      
+      for (let i = 0; i < scheduleForList.length; i++) {
+        expect(result[i].data).to.be.equal(i + 1);
+      }
+      
+      done();
+    });
+  });
+  
+  it('should list by time to schedule (desc)', done => {
     let j = 5;
     scheduler.list({ bySchedule: true, asc: -1 }, (err, result) => {
       if (err) {

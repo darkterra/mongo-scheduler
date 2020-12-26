@@ -38,9 +38,7 @@ describe('schedule builder', () => {
 
   it('should return an error', () => {
     const expectation = (newerr, newresult) =>  {
-      if (newerr) {
-        console.error('newerr: ', newerr);
-      }
+      
       expect(newerr).to.be.equal('/!\\ Missing property "name"');
     };
     
