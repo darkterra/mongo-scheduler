@@ -37,17 +37,15 @@ jobs:
 #     - run: npm i -g projectz badges
     - run: npm run build --if-present
     - run: npm run test:coverage
-      
-    - run: cat ./coverage/lcov.info
+
     - run: cat ${{ github.workspace }}/coverage/lcov.info
     - run: ls -al ${{ github.workspace }}/coverage
-    - run: ls -al ${{ github.workspace }}
       
     - name: Run codacy-coverage-reporter
       uses: codacy/codacy-coverage-reporter-action@master
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        coverage-reports: ${{ github.workspace }}/coverage/lcov.info
+        coverage-reports: lcov.info
       
 #   codacy-coverage-reporter:
 #     runs-on: ubuntu-latest
