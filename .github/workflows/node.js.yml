@@ -15,10 +15,10 @@ jobs:
 
     strategy:
       matrix:
-#         node-version: [10.x, 12.x, 14.x, 15.x]
-#         mongodb-version: [4.0, 4.2, 4.4]
-        node-version: [15.x]
-        mongodb-version: [4.4]
+        node-version: [10.x, 12.x, 14.x, 15.x]
+        mongodb-version: [4.0, 4.2, 4.4]
+#         node-version: [15.x]
+#         mongodb-version: [4.4]
 
     steps:
     - uses: actions/checkout@v2
@@ -43,16 +43,11 @@ jobs:
         path: ${{ github.workspace }}/coverage/lcov.info
       
   upload-coverage:
+    if: matrix.node-version == '15.x'
     runs-on: ubuntu-latest
     needs: [build]
-#     strategy:
-#       matrix:
-#         node-version: [15.x]
-#         mongodb-version: [4.4]
  
     steps:
-#     - uses: actions/checkout@v2
-
     - uses: actions/download-artifact@v2
       with:
         name: coverage-file
