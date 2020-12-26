@@ -43,7 +43,7 @@ jobs:
         path: ${{ github.workspace }}/coverage/lcov.info
       
   upload-coverage:
-    if: matrix.node-version == '15.x'
+    if: ${{ matrix.node-version == '15.x' }}
     runs-on: ubuntu-latest
     needs: [build]
  
