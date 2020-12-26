@@ -38,7 +38,7 @@ jobs:
     - run: npm run test:coverage
     
     - if: (matrix.node-version == 15.x && matrix.mongodb-version == 4.4)
-    - uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v2
       with:
         name: coverage-file
         path: ${{ github.workspace }}/coverage/lcov.info
