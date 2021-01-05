@@ -1,17 +1,19 @@
 name: Greetings
 
-on: [pull_request, issues, push]
+on: [pull_request, issues]
 
 jobs:
   greeting:
     runs-on: ubuntu-latest
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-#     - uses: actions/first-interaction@1.1.0
-#       with:
-#         repo-token: ${{ secrets.GITHUB_TOKEN }}
-#         issue-message: 'Message that will be displayed on users first issue'
-#         pr-message: 'Message that will be displayed on users first pull request'
+    - uses: actions/first-interaction@1.1.0
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-message: |-
+          # Hello there !
+          Thank you very mutch ${{ github.actor }} for your interest in my project.
+          I will read your message soon 😃
+        pr-message: |-
+          # Hello there !
+          Thank you very mutch ${{ github.actor }} for your interest in my project.
+          I will read your pr soon 😃
