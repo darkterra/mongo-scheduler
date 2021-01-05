@@ -1,0 +1,19 @@
+name: Greetings
+
+on: [pull_request, issues]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/first-interaction@1.1.0
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-message: |-
+          # Hello there !
+          Thank you very mutch ${{ github.actor }} for your interest in my project.
+          I will read your message soon 😃
+        pr-message: |-
+          # Hello there !
+          Thank you very mutch ${{ github.actor }} for your interest in my project.
+          I will read your pr soon 😃
