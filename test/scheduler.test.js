@@ -493,11 +493,13 @@ describe('purge', () => {
     const expectation = (olderr, oldResult) => {
       if (olderr) {
         console.error('olderr: ', olderr);
+        done();
       }
       
       scheduler.purge({ force: true }, (err, result) => {
         if (err) {
           console.error('err: ', err);
+          done();
         }
         
         events.find().toArray((err, docs) => {
@@ -510,7 +512,6 @@ describe('purge', () => {
           done();
         });
       });
-      
     };
     
     scheduler.scheduleBulk(scheduleForPurge, expectation);
@@ -809,6 +810,6 @@ describe('version', () => {
   const currentVersion = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'))).version;
   
   it(`should show the last version: ${currentVersion}`, () => {
-    expect(currentVersion).to.be.equal(scheduler.version());
+    expect(currentVersion).to.be.equal(Scheduler.version());
   });
 });

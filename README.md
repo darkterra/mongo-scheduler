@@ -6,7 +6,7 @@ mongo-scheduler-more
 <span class="badge-npmversion"><a href="https://npmjs.org/package/mongo-scheduler-more" title="View this project on NPM"><img src="https://img.shields.io/npm/v/mongo-scheduler-more.svg" alt="NPM version" /></a></span>
 <span class="badge-npmdownloads"><a href="https://npmjs.org/package/mongo-scheduler-more" title="View this project on NPM"><img src="https://img.shields.io/npm/dm/mongo-scheduler-more.svg" alt="NPM downloads" /></a></span>
 <br class="badge-separator" />
-<span class="badge-badge"><a href="https://circleci.com/gh/darkterra/mongo-scheduler" title="CircleCI Badge"><img src="https://circleci.com/gh/darkterra/mongo-scheduler.svg?style=svg" alt="CircleCI Badge" /></a></span>
+<span class="badge-badge"><a href="https://github.com/darkterra/mongo-scheduler" title="GitHub Actions Badge"><img src="https://github.com/darkterra/mongo-scheduler/workflows/Node.js%20CI/badge.svg" alt="GitHub Actions Badge" /></a></span>
 <span class="badge-badge"><a href="https://app.codacy.com/app/darkterra/mongo-scheduler?utm_source=github.com&utm_medium=referral&utm_content=darkterra/mongo-scheduler&utm_campaign=Badge_Grade_Settings" title="Codacy Grade Badge"><img src="https://api.codacy.com/project/badge/Grade/51fe243879a94a11807318338aac7d8e" alt="Codacy Grade Badge" /></a></span>
 <span class="badge-badge"><a href="https://www.codacy.com/app/darkterra/mongo-scheduler?utm_source=github.com&utm_medium=referral&utm_content=darkterra/mongo-scheduler&utm_campaign=Badge_Coverage" title="Codacy Coverage Badge"><img src="https://api.codacy.com/project/badge/Coverage/22f5c7a46aba46ee822ef36b910c2d06" alt="Codacy Coverage Badge" /></a></span>
 <br class="badge-separator" />
