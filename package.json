@@ -40,7 +40,7 @@
   },
   "scripts": {
     "test": "mocha test/ --exit",
-    "test:coverage": "projectz compile; nyc --reporter=lcov mocha -R nyan --forbid-only test/ --exit"
+    "test:coverage": "projectz compile && cat ./lib/helper.js && cat /home/runner/work/mongo-scheduler/mongo-scheduler/lib/helper.js && nyc --reporter=lcov mocha -R nyan --forbid-only test/ --exit"
   },
   "license": "MIT",
   "engine": {
