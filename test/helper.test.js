@@ -15,56 +15,34 @@ const defaultEvent = {
 };
 
 
-describe('Connexion Tests', () => {
+describe.only('Connexion Tests', () => {
+  async function testConnect ({ connection, driverOptions }) {
+    try {
+      await expect(async () => await connectToDB({ connection, driverOptions })).to.throw();
+    }
+    catch {
+
+    }
+  }
   it('should return throw BAD_URL', async () => {
     const url = 'badArrayConnectionShouldFireError';
-    
-    try {
-      await expect(async () =>  connectToDB({ connection: url, driverOptions: {} })).to.throw();
-    }
-    catch (err) {
-      // console.log('JYO: BAD_URL Yey, we have an client mongo Error !!!');
-    }
+    await testConnect({ connection: url, driverOptions: {} });
   });
-  it('should return throw RIGHT_URL & BAD_OPTIONS', () => {
+  it('should return throw RIGHT_URL & BAD_OPTIONS', async () => {
     const url = 'mongodb://localhost:27017/mongo-scheduler-more';
-    
-    try {
-      expect(async () => await connectToDB({ connection: url, driverOptions: {} })).to.throw();
-    }
-    catch (err) {
-      // console.log('JYO: RIGHT_URL & BAD_OPTIONS Yey, we have an client mongo Error !!!');
-    }
+    await testConnect({ connection: url, driverOptions: {} });
   });
-  it('should return throw BAD_URL_WITH_CREDENTIALS', () => {
+  it('should return throw BAD_URL_WITH_CREDENTIALS', async () => {
     const url = 'mongodb://AdminJY:*****@localhost:27017/mongo-scheduler-more';
-    
-    try {
-      expect(async () => await connectToDB({ connection: url, driverOptions: {} })).to.throw();
-    }
-    catch (err) {
-      // console.log('JYO: BAD_URL_WITH_CREDENTIALS Yey, we have an client mongo Error !!!');
-    }
+    await testConnect({ connection: url, driverOptions: {} });
   });
-  it('should return throw ATLAS_URL', () => {
+  it('should return throw ATLAS_URL', async () => {
     const url = 'mongodb+srv://AdminJY:*****@cluster0.1ba3u.mongodb.net/test?authSource=admin&replicaSet=atlas-ao2dxv-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true';
-    
-    try {
-      expect(async () => await connectToDB({ connection: url, driverOptions: {} })).to.throw();
-    }
-    catch (err) {
-      // console.log('JYO: ATLAS_URL Yey, we have an client mongo Error !!!');
-    }
+    await testConnect({ connection: url, driverOptions: {} });
   });
-  it('should return throw NO_URL', () => {
+  it('should return throw NO_URL', async () => {
     const url = null;
-    
-    try {
-      expect(async () => await connectToDB({ connection: url, driverOptions: {} })).to.throw();
-    }
-    catch (err) {
-      // console.log('JYO: ATLAS_URL Yey, we have an client mongo Error !!!');
-    }
+    await testConnect({ connection: url, driverOptions: {} });
   });
 });
 
