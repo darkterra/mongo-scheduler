@@ -15,7 +15,7 @@ const defaultEvent = {
 };
 
 
-describe.only('Connexion Tests', () => {
+describe('Connexion Tests', () => {
   async function testConnect ({ connection, driverOptions }) {
     try {
       await expect(async () => await connectToDB({ connection, driverOptions })).to.throw();
