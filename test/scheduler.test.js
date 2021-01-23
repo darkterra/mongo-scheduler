@@ -232,6 +232,11 @@ describe('emitter', () => {
   it('emits an event with multiple records', done => {
     let running = true;
     
+    const messages = [
+      { message: 'This is a record' },
+      { message: 'Another Record' }
+    ];
+    
     scheduler.on('awesome', (event, docs) => {
       docs.length.should.eql(2);
       
@@ -242,14 +247,7 @@ describe('emitter', () => {
       running = false;
     });
     
-    records.insertMany([
-      { message: 'This is a record' },
-      { message: 'Another Record' }
-    ], () => {
-      scheduler.schedule(details);
-    });
-    
-    done();
+    records.insertMany(messages, () => scheduler.schedule(details));
   });
 
   it('emits the original event', done => {
@@ -308,9 +306,13 @@ describe('emitter', () => {
   describe('with emitPerDoc', () => {
     const additionalDetails = { options: { emitPerDoc: true }, ...details };
     
-    
     it('should emit an event per doc', done => {
       let running = true;
+
+      const messages = [
+        { message: 'This is a record' },
+        { message: 'This is a record' }
+      ];
       
       scheduler.on('awesome', (event, doc) => {
         doc.message.should.eql('This is a record');
@@ -322,12 +324,7 @@ describe('emitter', () => {
         running = false;
       });
       
-      records.insertMany([
-        { message: 'This is a record' },
-        { message: 'This is a record' }
-      ], () => {
-        scheduler.schedule(additionalDetails);
-      });
+      records.insertMany(messages, () => scheduler.schedule(additionalDetails));
     });
   });
 
@@ -353,6 +350,12 @@ describe('emitter', () => {
     
     it('emits an event with multiple records', done => {
       let running = true;
+      
+      const messages = [
+        { message: 'This is a record' },
+        { message: 'Another Record' }
+      ];
+
       scheduler.on('awesome', (event, docs) => {
         docs.length.should.eql(2);
         if(running) {
@@ -361,12 +364,7 @@ describe('emitter', () => {
         running = false;
       });
 
-      records.insertMany([
-        { message: 'This is a record' },
-        { message: 'Another Record' }
-      ], () => {
-        scheduler.schedule(additionalDetails);
-      });
+      records.insertMany(messages, () => scheduler.schedule(additionalDetails));
     });
   });
 
