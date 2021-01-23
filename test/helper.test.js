@@ -26,23 +26,23 @@ describe('Connexion Tests', () => {
   }
   it('should return throw BAD_URL', async () => {
     const url = 'badArrayConnectionShouldFireError';
-    await testConnect({ connection: url, driverOptions: {} });
+    await testConnect({ connection: url, driverOptions: { useUnifiedTopology: true } });
   });
   it('should return throw RIGHT_URL & BAD_OPTIONS', async () => {
     const url = 'mongodb://localhost:27017/mongo-scheduler-more';
-    await testConnect({ connection: url, driverOptions: {} });
+    await testConnect({ connection: url, driverOptions: { useUnifiedTopology: true } });
   });
   it('should return throw BAD_URL_WITH_CREDENTIALS', async () => {
     const url = 'mongodb://AdminJY:*****@localhost:27017/mongo-scheduler-more';
-    await testConnect({ connection: url, driverOptions: {} });
+    await testConnect({ connection: url, driverOptions: { useUnifiedTopology: true } });
   });
   it('should return throw ATLAS_URL', async () => {
     const url = 'mongodb+srv://AdminJY:*****@cluster0.1ba3u.mongodb.net/test?authSource=admin&replicaSet=atlas-ao2dxv-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true';
-    await testConnect({ connection: url, driverOptions: {} });
+    await testConnect({ connection: url, driverOptions: { useUnifiedTopology: true } });
   });
   it('should return throw NO_URL', async () => {
     const url = null;
-    await testConnect({ connection: url, driverOptions: {} });
+    await testConnect({ connection: url, driverOptions: { useUnifiedTopology: true } });
   });
 });
 

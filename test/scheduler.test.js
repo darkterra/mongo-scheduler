@@ -79,6 +79,15 @@ describe('schedule', () => {
     name: 'new-event',
     collection: 'records'
   };
+
+  it('should callback an error', done => {
+    const expectation = olderr => {
+      expect(olderr).to.be.equal('/!\\ Missing property "name"');
+      done();
+    };
+    
+    scheduler.schedule({}, expectation);
+  });
   
   it('should create an event', done => {
     const expectation = (olderr, oldResult) => {
@@ -124,6 +133,54 @@ describe('schedule', () => {
       scheduler.schedule(scheduleDetails, expectation);
     });
   });
+  
+  it('should callback an error [PROMISE]', async () => {
+    try {
+      await scheduler.schedule({});
+    }
+    catch (err) {
+      expect(err).to.be.equal('/!\\ Missing property "name"');
+    }
+  });
+
+  it('should create an event [PROMISE]', async () => {
+    try {
+      await scheduler.schedule(scheduleDetails);
+
+      events.find().toArray((err, docs) => {
+        if (err) {
+          console.error(err);
+        }
+        
+        expect(docs.length).to.be.equal(1);
+        expect(docs[0].name).to.be.equal('new-event');
+      });
+    }
+    catch (err) {
+      throw err;
+    }
+  });
+  
+  it('should overwrite an event [PROMISE]', async () => {
+    try {
+      scheduleDetails.data = 200;
+
+      await scheduler.schedule(scheduleDetails);
+
+      events.find().toArray((err, docs) => {
+        if (err) {
+          console.error(err);
+        }
+        
+        expect(docs.length).to.be.equal(1);
+        expect(docs[0].name).to.be.equal('new-event');
+        expect(docs[0].data).to.be.equal(200);
+      });
+    }
+    catch (err) {
+      throw err;
+    }
+  });
 });
 
 describe('emitter', () => {
@@ -132,7 +189,7 @@ describe('emitter', () => {
     collection: 'records'
   };
   
-  it.skip('should emit an error', (done) => {
+  it.skip('should emit an error', done => {
     let running = true;
    
     sinon.stub(records, 'find').yields(new Error('Cannot find'));
@@ -411,18 +468,32 @@ describe('bulk', () => {
       after: moment(after).add(5000, 'm').toDate()
     }
   ];
+
+  const bulkSchedule2 = [
+    {
+      name: 'event-to-bulk',
+      after: moment(after).add(5, 'm').toDate()
+    },
+    {
+      name: 'event-to-bulk',
+      after: moment(after).add(35, 'm').toDate()
+    },
+    {
+      name: 'event-to-bulk',
+      after: moment(after).add(18, 'm').toDate()
+    },
+    {
+      name: 'event-to-bulk',
+      after: moment(after).add(1000, 'm').toDate()
+    },
+    {
+      name: 'event-to-bulk',
+      data: 'this is hacked scheduler !!!',
+      after: moment(after).add(1000, 'm').toDate()
+    }
+  ];
   
-  it('should callback an error', done => {
-    const expectation = (olderr, oldResult) => {
-      expect(olderr).to.be.equal(genericError);
-      
-      done();
-    };
-    
-    scheduler.remove({}, expectation);
-  });
-  
-  it('should callback an error', done => {
+  it('should callback an error (null)', done => {
     const expectation = (olderr, oldResult) => {
       expect(olderr).to.be.equal(genericError);
       
@@ -453,6 +524,35 @@ describe('bulk', () => {
     
     scheduler.scheduleBulk(bulkSchedule, expectation);
   });
+  
+  it('should return an reject error (null) [PROMISE]', async () => {
+    try {
+      await scheduler.scheduleBulk(null);
+    }
+    catch (err) {
+      expect(err).to.be.equal(genericError);
+    }
+  });
+  
+  it('should schedule all events at once request to mongo [PROMISE]', async () => {
+    try {
+      const oldResult = await scheduler.scheduleBulk(bulkSchedule2);
+      
+      events.find().toArray((err, docs) => {
+        if (err) {
+          console.error(err);
+        }
+
+        expect(docs.length).to.be.equal(4);
+        expect(oldResult.result.nUpserted).to.be.equal(4);
+        expect(oldResult.result.nMatched).to.be.equal(1);
+        expect(oldResult.result.nModified).to.be.equal(1);
+      });
+    }
+    catch (err) {
+      throw err;
+    }
+  });
 });
 
 describe('purge', () => {
@@ -476,6 +576,29 @@ describe('purge', () => {
     {
       name: 'event-to-purge',
       after: moment().add(5000, 'm').toDate()
+    }
+  ];
+
+  const scheduleForPurge2 = [
+    {
+      name: 'event-to-purge',
+      after: moment().add(35, 'm').toDate()
+    },
+    {
+      name: 'event-to-purge',
+      after: moment().add(55, 'm').toDate()
+    },
+    {
+      name: 'event-to-purge',
+      after: moment().add(28, 'm').toDate()
+    },
+    {
+      name: 'event-to-purge',
+      after: moment().add(86, 'm').toDate()
+    },
+    {
+      name: 'event-to-purge',
+      after: moment().add(2000, 'm').toDate()
     }
   ];
   
@@ -516,6 +639,34 @@ describe('purge', () => {
     
     scheduler.scheduleBulk(scheduleForPurge, expectation);
   });
+  
+  it('should reject an error [PROMISE]', async () => {
+    try {
+      await scheduler.purge({});
+    }
+    catch (err) {
+      expect(err).to.be.equal(genericError);
+    }
+  });
+  
+  it('should purge all events [PROMISE]', async () => {
+    try {
+      await scheduler.scheduleBulk(scheduleForPurge2);
+      const result = await scheduler.purge({ force: true });
+
+      events.find().toArray((err, docs) => {
+        if (err) {
+          console.error(err);
+        }
+
+        expect(docs.length).to.be.equal(0);
+        expect(result.deletedCount).to.be.equal(5);
+      });
+    }
+    catch (err) {
+      throw err;
+    }
+  });
 });
 
 describe('list', () => {
@@ -547,11 +698,7 @@ describe('list', () => {
     }
   ];
   
-  beforeEach(done => {
-    scheduler.scheduleBulk([...scheduleForList], () => {
-      done();
-    });
-  });
+  beforeEach(async () => await scheduler.scheduleBulk([...scheduleForList]));
   
   it('should list by saved order', done => {
     scheduler.list({}, (err, result) => {
@@ -609,6 +756,59 @@ describe('list', () => {
       done();
     });
   });
+  
+  it('should list by saved order [PROMISE]', async () => {
+    try {
+      const result = await scheduler.list({});
+      
+      for (let i = 0; i < scheduleForList.length; i++) {
+        expect(result[i].data).to.be.equal(scheduleForList[i].data);
+      }
+    }
+    catch (err) {
+      throw err;
+    }
+  });
+    
+  it('should list by time to schedule (asc) [PROMISE]', async () => {
+    try {
+      const result = await scheduler.list({ bySchedule: true });
+      
+      for (let i = 0; i < scheduleForList.length; i++) {
+        expect(result[i].data).to.be.equal(i + 1);
+      }
+    }
+    catch (err) {
+      throw err;
+    }
+  });
+    
+  it('should list by time to schedule (asc explicit) [PROMISE]', async () => {
+    try {
+      const result = await scheduler.list({ bySchedule: true, asc: 1 });
+      
+      for (let i = 0; i < scheduleForList.length; i++) {
+        expect(result[i].data).to.be.equal(i + 1);
+      }
+    }
+    catch (err) {
+      throw err;
+    }
+  });
+    
+  it('should list by time to schedule (desc) [PROMISE]', async () => {
+    try {
+      let j = 5;
+      const result = await scheduler.list({ bySchedule: true, asc: -1 });
+      
+      for (let i = 0; i < scheduleForList.length; i++) {
+        expect(result[i].data).to.be.equal(j--);
+      }
+    }
+    catch (err) {
+      throw err;
+    }
+  });
 });
 
 describe('findBy', () => {
@@ -638,11 +838,7 @@ describe('findBy', () => {
     }
   ];
   
-  beforeEach(done => {
-    scheduler.scheduleBulk([...scheduleForFindBy], () => {
-      done();
-    });
-  });
+  beforeEach(async () => scheduler.scheduleBulk([...scheduleForFindBy]));
   
   it('name should callback error', done => {
     scheduler.findByName({}, err => {
@@ -693,6 +889,60 @@ describe('findBy', () => {
       done();
     });
   });
+    
+  it('name should reject error [PROMISE]', async () => {
+    try {
+      await scheduler.findByName({});
+    }
+    catch (err) {
+      expect(err).to.be.equal(genericError);
+    }
+  });
+    
+  it('name [PROMISE]', async () => {
+    try {
+      const result = await scheduler.findByName({ name: 'event-to-find' });
+      
+      result.length.should.eql(3);
+    }
+    catch (err) {
+      throw err;
+    }
+  });
+    
+  it('storageId should reject error [PROMISE]', async () => {
+    try {
+      await scheduler.findByStorageId({});
+    }
+    catch (err) {
+      expect(err).to.be.equal(genericError);
+    }
+  });
+    
+  it('storageId [PROMISE]', async () => {
+    try {
+      const result = await scheduler.findByStorageId({ id: '5c96c3a3a28fe9d02433b250' });
+
+      result.length.should.eql(2);
+      result[0].storage.id.should.eql('5c96c3a3a28fe9d02433b250');
+      result[1].storage.id.should.eql('5c96c3a3a28fe9d02433b250');
+    }
+    catch (err) {
+      throw err;
+    }
+  });
+    
+  it('storageId and name [PROMISE]', async () => {
+    try {
+      const result = await scheduler.findByStorageId({ name: 'event-to-find', id: '5c96c3a3a28fe9d02433b250' });
+      
+      result.length.should.eql(1);
+      result[0].storage.id.should.eql('5c96c3a3a28fe9d02433b250');
+    }
+    catch (err) {
+      throw err;
+    }
+  });
 });
 
 describe('remove', () => {
@@ -726,13 +976,9 @@ describe('remove', () => {
     }
   ];
   
-  beforeEach(done => {
-    scheduler.scheduleBulk([...scheduleForRemove], () => {
-      done();
-    });
-  });
+  beforeEach(async () => scheduler.scheduleBulk([...scheduleForRemove]));
   
-  it('should callback an error', done => {
+  it('should callback an error (empty object)', done => {
     const expectation = (olderr, oldResult) => {
       expect(olderr).to.be.equal(genericError);
       
@@ -740,20 +986,6 @@ describe('remove', () => {
     };
     
     scheduler.remove({}, expectation);
-  });
-  
-  it('should remove by after', done => {
-    scheduler.remove({ name: 'event-to-remove', after }, (err, result) => {
-      if (err) {
-        console.error('err: ', err);
-      }
-      
-      expect(result.result.ok).to.be.equal(1);
-      expect(result.result.n).to.be.equal(1);
-      expect(result.deletedCount).to.be.equal(1);
-      
-      done();
-    });
   });
   
   it('should remove by name', done => {
@@ -765,6 +997,20 @@ describe('remove', () => {
       expect(result.result.ok).to.be.equal(1);
       expect(result.result.n).to.be.equal(4);
       expect(result.deletedCount).to.be.equal(4);
+      
+      done();
+    });
+  });
+  
+  it('should remove by after and name', done => {
+    scheduler.remove({ name: 'event-to-remove', after }, (err, result) => {
+      if (err) {
+        console.error('err: ', err);
+      }
+      
+      expect(result.result.ok).to.be.equal(1);
+      expect(result.result.n).to.be.equal(1);
+      expect(result.deletedCount).to.be.equal(1);
       
       done();
     });
@@ -803,8 +1049,204 @@ describe('remove', () => {
       done();
       });
   });
+    
+  it('should reject an error (empty object) [PROMISE]', async () => {
+    try {
+      const result = await scheduler.remove({});
+    }
+    catch (err) {
+      expect(err).to.be.equal(genericError);
+    }
+  });
+    
+  it('should remove by name [PROMISE]', async () => {
+    try {
+      const result = await scheduler.remove({ name: 'event-to-remove' });
+      
+      expect(result.result.ok).to.be.equal(1);
+      expect(result.result.n).to.be.equal(4);
+      expect(result.deletedCount).to.be.equal(4);
+    }
+    catch (err) {
+      throw err;
+    }
+  });
+    
+  it('should remove by after and name [PROMISE]', async () => {
+    try {
+      const result = await scheduler.remove({ name: 'event-to-remove', after });
+      
+      expect(result.result.ok).to.be.equal(1);
+      expect(result.result.n).to.be.equal(1);
+      expect(result.deletedCount).to.be.equal(1);
+    }
+    catch (err) {
+      throw err;
+    }
+  });
+    
+  it('should remove by eventId (ObjectID) [PROMISE]', async () => {
+    try {
+      const { _id } = await scheduler.list({ query: { name: 'event-to-remove-new' }});
+      const result = await scheduler.remove({ name: 'event-to-remove-new', eventId: _id });
+        
+      expect(result.result.ok).to.be.equal(1);
+      expect(result.result.n).to.be.equal(1);
+      expect(result.deletedCount).to.be.equal(1);
+    }
+    catch (err) {
+      throw err;
+    }
+  });
+    
+  it('should remove by id (String) [PROMISE]', async () => {
+    try {
+      const result = await scheduler.remove({ name: 'event-to-remove-new', id: '123456789' });
+      
+      expect(result.result.ok).to.be.equal(1);
+      expect(result.result.n).to.be.equal(1);
+      expect(result.deletedCount).to.be.equal(1);
+    }
+    catch (err) {
+      throw err;
+    }
+  });
 });
 
+describe('disable', () => {
+  const after = moment().add(25, 'm').toDate();
+  const scheduleForRemove = [
+    {
+      name: 'event-to-remove',
+      data: 2,
+      after: moment().add(15, 'm').toDate()
+    },
+    {
+      name: 'event-to-remove',
+      data: 3,
+      after
+    },
+    {
+      name: 'event-to-remove',
+      data: 1,
+      id: '123456789',
+      after: moment().add(8, 'm').toDate()
+    },
+    {
+      name: 'event-to-remove',
+      data: 4,
+      after: moment().add(66, 'm').toDate()
+    },
+    {
+      name: 'event-to-remove-new',
+      data: 5,
+      after: moment().add(5000, 'm').toDate()
+    }
+  ];
+  
+  beforeEach(async () => scheduler.scheduleBulk([...scheduleForRemove]));
+  
+  it('should disable Scheduler', done => {
+    const expectation = (olderr, oldResult) => {
+      if (olderr) {
+        console.log('JYO: olderr: ', olderr);
+      }
+      else {
+        expect(oldResult.result.ok).to.be.equal(1);
+        expect(oldResult.result.nModified).to.be.equal(5);
+        expect(oldResult.result.n).to.be.equal(5);
+  
+        scheduler.list({}, (err, result) => {
+          if (err) {
+            console.log('JYO: err: ', err);
+          }
+          else {
+            expect(result.length).to.be.equal(5);
+
+            for (let event of result) {
+              expect(event.status).to.be.equal('disabled');
+            }
+            done();
+          }
+        });
+      }
+    };
+    
+    scheduler.disable(expectation);
+  });
+  
+  it('should disable Scheduler and re-enable Scheduler', done => {
+    const expectation = (olderr, oldResult) => {
+      scheduler.enable((olderr, oldResult) => {
+        if (olderr) {
+          console.log('JYO: olderr: ', olderr);
+        }
+        else {
+          expect(oldResult.result.ok).to.be.equal(1);
+          expect(oldResult.result.nModified).to.be.equal(5);
+          expect(oldResult.result.n).to.be.equal(5);
+
+          scheduler.list({}, (err, result) => {
+            if (err) {
+              console.log('JYO: err: ', err);
+            }
+            else {
+              expect(result.length).to.be.equal(5);
+  
+              for (let event of result) {
+                expect(event.status).to.be.equal('ready');
+              }
+              done();
+            }
+          });
+        }
+      });
+    };
+    
+    scheduler.disable(expectation);
+  });
+    
+  it('should disable Scheduler [PROMISE]', async () => {
+    try {
+      const resultDisable = await scheduler.disable();
+      
+      expect(resultDisable.result.ok).to.be.equal(1);
+      expect(resultDisable.result.nModified).to.be.equal(5);
+      expect(resultDisable.result.n).to.be.equal(5);
+
+      const resultList = await scheduler.list({});
+      expect(resultList.length).to.be.equal(5);
+
+      for (let event of resultList) {
+        expect(event.status).to.be.equal('disabled');
+      }
+    }
+    catch (err) {
+      throw err;
+    }
+  });
+    
+  it('should disable Scheduler and re-enable Scheduler [PROMISE]', async () => {
+    try {
+      await scheduler.disable();
+      const resultEnable = await scheduler.enable();
+      
+      expect(resultEnable.result.ok).to.be.equal(1);
+      expect(resultEnable.result.nModified).to.be.equal(5);
+      expect(resultEnable.result.n).to.be.equal(5);
+
+      const resultList = await scheduler.list({});
+      expect(resultList.length).to.be.equal(5);
+
+      for (let event of resultList) {
+        expect(event.status).to.be.equal('ready');
+      }
+    }
+    catch (err) {
+      throw err;
+    }
+  });
+});
 
 describe('version', () => {
   const currentVersion = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'))).version;
