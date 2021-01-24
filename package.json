@@ -1,7 +1,7 @@
 {
   "name": "mongo-scheduler-more",
   "description": "Persistent event scheduler using mongo as storage",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "keywords": [
     "job",
     "jobs",
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "check-types": "^11.1.1",
-    "cron-parser": "^3.0.0",
+    "cron-parser": "^3.1.0",
     "moment": "^2.24.0",
     "mongodb": "^3.4.1"
   },
@@ -36,7 +36,7 @@
     "nyc": "^15.0.0",
     "projectz": "^2.18.0",
     "should": "^13.2.3",
-    "sinon": "^9.2.2"
+    "sinon": "^9.2.4"
   },
   "scripts": {
     "test": "mocha test/ --exit",
