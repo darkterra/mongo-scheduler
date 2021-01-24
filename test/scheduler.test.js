@@ -307,21 +307,23 @@ describe('emitter', () => {
     const additionalDetails = { options: { emitPerDoc: true }, ...details };
     
     it('should emit an event per doc', done => {
-      let running = true;
+      let i = 0;
 
       const messages = [
         { message: 'This is a record' },
         { message: 'This is a record' }
       ];
-      
+
       scheduler.on('awesome', (event, doc) => {
         doc.message.should.eql('This is a record');
-        
-        if(running) {
-          done();
+
+        if (doc.message === 'This is a record') {
+          i++;
         }
         
-        running = false;
+        if(i === 2) {
+          done();
+        }
       });
       
       records.insertMany(messages, () => scheduler.schedule(additionalDetails));
