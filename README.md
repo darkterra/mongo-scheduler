@@ -66,12 +66,23 @@ const scheduler = new MSM('mongodb://localhost:27017/scheduler-db', options);
 |dbname           |String |You can set (and overright) the name of DataBase to use. _(only if you use the connexion string)_                      |**false**      |true     |
 |pollInterval     |Number |Frequency in ms that the scheduler should poll the db. `Default: 60000 (1 minute)`.                                    |**false**      |true     |
 |doNotFire        |Bool   |If set to true, this instance will only schedule events, not fire them. `Default: false`.                              |**false**      |true     |
+|customEventEmitter        |Bool   |You can pass an instance of custom eventEmitter if is compatible with the core Node.js EventEmmiter. But be carefull with this option                              |**false**      |true     |
 |useNewUrlParser  |Bool   |If set to false, the mongo driver use the old parser. `Default: true`.                                                 |true           |true     |
 |loggerLevel      |String |The logging level (error / warn / info / debug).                                                                       |true           |true     |
 |logger           |Object |Custom logger object.                                                                                                  |true           |true     |
 |validateOptions  |Bool   |Validate MongoClient passed in options for correctness. `Default: false` _(only if you use the connection **string**)_ |true           |true     |
 |auth             |Object |{ user: 'your\_ddb\_user', password: 'your\_ddb\_password'}.                                                           |true           |true     |
 |authMechanism    |String |Mechanism for authentication: MDEFAULT, GSSAPI, PLAIN, MONGODB-X509, or SCRAM-SHA-1                                    |true           |true     |
+
+
+###### How to use this module with custom eventEmitter
+```javascript
+const EventEmitter3 = require('eventemitter3');
+const customEventEmitter = new EventEmitter3();
+
+const MSM = require('mongo-scheduler-more');
+const scheduler = new MSM('mongodb://localhost:27017/scheduler-db', { customEventEmitter });
+```
 
 ---------------------------------------
 
@@ -267,7 +278,7 @@ const event  = {
 
 scheduler.schedule(event);
 //
-// This event is triggered daily at 10h00:00 and allows you to retrieve the list
+// This event is triggered daily (for 5 years) at 10h00:00 and allows you to retrieve the list
 // of credit cards that expires in a month. The server only has to send emails to users
 ```
 
@@ -290,7 +301,7 @@ catch (err) {
   throw err;
 }
 //
-// This event is triggered daily at 23h00:00 and allows you to retrieve the list
+// This event is triggered daily (for 5 years) at 10h00:00 and allows you to retrieve the list
 // of credit cards that expires in a month. The server only has to send emails to users
 ```
 
