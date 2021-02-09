@@ -1,5 +1,6 @@
 node_modules/*
 .c9/
+.vscode/
 .local/
 data/
 npm-debug.log
