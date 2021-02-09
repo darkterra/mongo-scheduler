@@ -1,1 +1,1 @@
-module.exports = require('./lib/scheduler.js');
+module.exports = require('./lib/scheduler');
