@@ -10,10 +10,10 @@ const moment           = require('moment');
 const { readFileSync } = require('fs');
 const { join }         = require('path');
 
-const Scheduler  = require('../index.js');
+const MSM  = require('../index.js');
 const connection = 'mongodb://localhost:27017/mongo-scheduler-more';
 
-const scheduler       = new Scheduler(connection, { pollInterval: 250 });
+const scheduler       = new MSM(connection, { pollInterval: 250 });
 const MongoClient     = mongo.MongoClient;
 const connectionArray = connection.split('/');
 const database        = connectionArray[3] || null;
@@ -212,16 +212,9 @@ describe('emitter', () => {
   });
   
   it('should emit an event with matching records', done => {
-    let running = true;
-    
-    scheduler.on('awesome', (event, docs) => {
+    scheduler.once('awesome', (event, docs) => {
       expect(docs[0].message).to.be.equal('This is a record');
-      
-      if(running) {
-        done();
-      }
-      
-      running = false;
+      done();
     });
     
     records.insertOne({ message: 'This is a record' }, () => {
@@ -230,41 +223,29 @@ describe('emitter', () => {
   });
   
   it('emits an event with multiple records', done => {
-    let running = true;
-    
     const messages = [
       { message: 'This is a record' },
       { message: 'Another Record' }
     ];
-    
-    scheduler.on('awesome', (event, docs) => {
+
+    scheduler.once('awesome', (event, docs) => {
       docs.length.should.eql(2);
-      
-      if(running) {
-        done();
-      }
-      
-      running = false;
+      done();
     });
     
-    records.insertMany(messages, () => scheduler.schedule(details));
+    records.insertMany(messages, () => {
+      scheduler.schedule(details);
+    });
   });
 
   it('emits the original event', done => {
     const additionalDetails = { data: 'MyData', ...details };
     
-    let running = true;
-    
-    scheduler.on('awesome', (event, doc) => {
+    scheduler.once('awesome', (event, doc) => {
       event.name.should.eql('awesome');
       event.storage.should.eql({ collection: 'records', query: null, id: null });
       event.data.should.eql('MyData');
-      
-      if(running) {
-        done();
-      }
-      
-      running = false;
+      done();
     });
     
     records.insertOne({ message: 'This is a record' }, () => {
@@ -1252,6 +1233,6 @@ describe('version', () => {
   const currentVersion = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'))).version;
   
   it(`should show the last version: ${currentVersion}`, () => {
-    expect(currentVersion).to.be.equal(Scheduler.version());
+    expect(currentVersion).to.be.equal(MSM.version());
   });
 });
