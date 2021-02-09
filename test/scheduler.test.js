@@ -419,6 +419,47 @@ describe('emitter', () => {
   });
 });
 
+describe('More advence query', () => {
+  const details = { 
+    name: 'orders',
+    collection: 'records'
+  };
+
+  const after = moment().toDate();
+  
+  const orders = [
+    { order: 1, created_at: moment(after).toDate() },
+    { order: 2, created_at: moment(after).add(15, 'm').toDate() },
+    { order: 3, created_at: moment(after).add(30, 'm').toDate() }
+  ];
+
+  it('should get only records with order greater than 1 (2 résults)', done => {
+    scheduler.once('orders', (event, docs) => {
+      docs.length.should.eql(2);
+      done();
+    });
+
+    records.insertMany(orders, () => scheduler.schedule({ ...details, query: { order: { $gt: 1 }}}));
+  });
+
+  it('should get only records with created_at greater than now', done => {
+    scheduler.once('orders', (event, docs) => {
+      docs.length.should.eql(2);
+      done();
+    });
+
+    records.insertMany(orders, () => scheduler.schedule({ ...details, query: { created_at: { $gt: moment(after).toDate() }}}));
+  });
+
+  it('should get only records with order greater than 2 and created_at greater than now', done => {
+    scheduler.once('orders', (event, docs) => {
+      docs.length.should.eql(1);
+      done();
+    });
+
+    records.insertMany(orders, () => scheduler.schedule({ ...details, query: { order: { $gt: 2 }, created_at: { $gt: moment(after).toDate() }}}));
+  });
+});
 
 describe('bulk', () => {
   const after = moment().toDate();

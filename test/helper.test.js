@@ -10,7 +10,7 @@ const defaultEvent = {
   collection: 'collection',
   id: 'recordId',
   after: 'date',
-  query: 'query',
+  query: {},
   data: { my: 'data' }
 };
 
@@ -55,7 +55,7 @@ describe('schedule builder', () => {
       name: 'name',
       status: 'ready',
       conditions: { after: 'date', endDate: undefined },
-      storage: { query: 'query', collection: 'collection', id: 'recordId' },
+      storage: { query: '{}', collection: 'collection', id: 'recordId' },
       data: { my: 'data' },
       cron: undefined,
       options: { emitPerDoc: false }
